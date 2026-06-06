@@ -1,18 +1,25 @@
-﻿<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>时间戳转换 - 在线工具箱</title><meta name="description" content="在线 Unix 时间戳转换工具，时间戳与日期互转，支持秒/毫秒级精度。"><link rel="stylesheet" href="../css/style.css"></head><body>
-<div class="tool-page"><a href="../index.html" class="back-link">← 返回工具箱</a><div class="tool-header"><h1>时间戳转换</h1><p class="desc">Unix 时间戳与日期时间互相转换</p></div>
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>鏃堕棿鎴宠浆鎹?- 鍦ㄧ嚎宸ュ叿绠?/title><meta name="description" content="鍦ㄧ嚎 Unix 鏃堕棿鎴宠浆鎹㈠伐鍏凤紝鏃堕棿鎴充笌鏃ユ湡浜掕浆锛屾敮鎸佺/姣绾х簿搴︺€?><link rel="stylesheet" href="../css/style.css"></head><body>
+<div class="tool-page"><a href="../index.html" class="back-link">鈫?杩斿洖宸ュ叿绠?/a><div class="tool-header"><h1>鏃堕棿鎴宠浆鎹?/h1><p class="desc">Unix 鏃堕棿鎴充笌鏃ユ湡鏃堕棿浜掔浉杞崲</p></div>
 <div class="tool-body">
-<div style="margin-bottom:20px;padding:14px;background:var(--bg);border-radius:var(--radius-sm);font-family:monospace;text-align:center" id="nowTs">当前时间戳（秒）：--</div>
-<div class="form-group"><label>时间戳 → 日期</label><div style="display:flex;gap:10px"><input type="text" id="tsInput" placeholder="输入时间戳，如 1700000000" style="flex:1"><button class="btn btn-primary btn-sm" onclick="tsToDate()">转换</button></div></div>
+<div style="margin-bottom:20px;padding:14px;background:var(--bg);border-radius:var(--radius-sm);font-family:monospace;text-align:center" id="nowTs">褰撳墠鏃堕棿鎴筹紙绉掞級锛?-</div>
+<div class="form-group"><label>鏃堕棿鎴?鈫?鏃ユ湡</label><div style="display:flex;gap:10px"><input type="text" id="tsInput" placeholder="杈撳叆鏃堕棿鎴筹紝濡?1700000000" style="flex:1"><button class="btn btn-primary btn-sm" onclick="tsToDate()">杞崲</button></div></div>
 <div class="result-area" id="dateResult"></div>
-<div class="form-group" style="margin-top:20px"><label>日期 → 时间戳</label><div style="display:flex;gap:10px"><input type="datetime-local" id="dtInput" style="flex:1"><button class="btn btn-primary btn-sm" onclick="dateToTs()">转换</button></div></div>
+<div class="form-group" style="margin-top:20px"><label>鏃ユ湡 鈫?鏃堕棿鎴?/label><div style="display:flex;gap:10px"><input type="datetime-local" id="dtInput" style="flex:1"><button class="btn btn-primary btn-sm" onclick="dateToTs()">杞崲</button></div></div>
 <div class="result-area" id="tsResult"></div>
-<div class="btn-group"><button class="btn btn-secondary btn-sm" onclick="useNow()">🕐 使用当前时间</button><button class="btn btn-secondary btn-sm" onclick="copyTs()">📋 复制秒级时间戳</button></div>
-</div><div class="ad-slot">📢 广告位</div></div>
+<div class="btn-group"><button class="btn btn-secondary btn-sm" onclick="useNow()">馃晲 浣跨敤褰撳墠鏃堕棿</button><button class="btn btn-secondary btn-sm" onclick="copyTs()">馃搵 澶嶅埗绉掔骇鏃堕棿鎴?/button></div>
+</div><div class="ad-slot">馃摙 骞垮憡浣?/div></div>
 <script>
-setInterval(function(){document.getElementById("nowTs").textContent="当前时间戳（秒）："+Math.floor(Date.now()/1000)},1000);
-function tsToDate(){var v=document.getElementById("tsInput").value.trim();if(!v)return;var ts=parseInt(v);if(ts<1e12)ts*=1000;var d=new Date(ts);document.getElementById("dateResult").textContent="UTC: "+d.toUTCString()+"\n本地: "+d.toLocaleString("zh-CN")+"\nISO: "+d.toISOString()}
-function dateToTs(){var v=document.getElementById("dtInput").value;if(!v)return;var d=new Date(v);document.getElementById("tsResult").textContent="秒级: "+Math.floor(d.getTime()/1000)+"\n毫秒级: "+d.getTime()}
+setInterval(function(){document.getElementById("nowTs").textContent="褰撳墠鏃堕棿鎴筹紙绉掞級锛?+Math.floor(Date.now()/1000)},1000);
+function tsToDate(){var v=document.getElementById("tsInput").value.trim();if(!v)return;var ts=parseInt(v);if(ts<1e12)ts*=1000;var d=new Date(ts);document.getElementById("dateResult").textContent="UTC: "+d.toUTCString()+"\n鏈湴: "+d.toLocaleString("zh-CN")+"\nISO: "+d.toISOString()}
+function dateToTs(){var v=document.getElementById("dtInput").value;if(!v)return;var d=new Date(v);document.getElementById("tsResult").textContent="绉掔骇: "+Math.floor(d.getTime()/1000)+"\n姣绾? "+d.getTime()}
 function useNow(){var d=new Date();document.getElementById("dtInput").value=d.toISOString().slice(0,16);document.getElementById("tsInput").value=Math.floor(d.getTime()/1000)}
-function copyTs(){navigator.clipboard.writeText(String(Math.floor(Date.now()/1000))).then(function(){var b=event.target;b.textContent="✅ 已复制";setTimeout(function(){b.textContent="📋 复制秒级时间戳"},2000)})}
+function copyTs(){navigator.clipboard.writeText(String(Math.floor(Date.now()/1000))).then(function(){var b=event.target;b.textContent="鉁?宸插鍒?;setTimeout(function(){b.textContent="馃搵 澶嶅埗绉掔骇鏃堕棿鎴?},2000)})}
 useNow();
-</script></body></html>
+</script>
+<!-- 璁块棶缁熻 -->
+<div style="margin-top:16px;font-size:.85rem;color:var(--text-secondary)">
+  <span>馃憖 鏈珯鎬昏闂?<span id="busuanzi_value_site_pv"></span> 娆?路 
+  <span id="busuanzi_value_site_uv"></span> 浜?/span>
+</div>
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+</body></html>
