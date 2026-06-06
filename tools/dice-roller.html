@@ -1,0 +1,37 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>骰子模拟器 - 在线工具箱</title><link rel="stylesheet" href="../css/style.css"><style>
+.dice-wrap{display:flex;flex-direction:column;align-items:center;gap:20px}
+.dice-area{display:flex;gap:20px;flex-wrap:wrap;justify-content:center}
+.dice{width:80px;height:80px;background:linear-gradient(135deg,#fff,#f0f0f0);border-radius:16px;box-shadow:0 4px 20px rgba(0,0,0,.15);display:flex;align-items:center;justify-content:center;font-size:2.5rem;font-weight:700;transition:transform .1s}
+.dice.rolling{animation:diceRoll .15s infinite}
+@keyframes diceRoll{0%{transform:rotate(0)}25%{transform:rotate(10deg) scale(1.05)}50%{transform:rotate(-5deg)}75%{transform:rotate(8deg)}100%{transform:rotate(0)}}
+.dice-total{font-size:1.8rem;font-weight:800;color:var(--primary)}
+</style></head><body>
+<div class="tool-page"><a href="../index.html" class="back-link">← 返回工具箱</a><div class="tool-header"><h1>🎲 骰子模拟器</h1><p class="desc">掷骰子 · 多骰同掷 · 点数统计</p></div>
+<div class="tool-body"><div class="dice-wrap">
+<div style="display:flex;gap:8px;align-items:center"><label>骰子数量:</label><input type="number" id="diceCount" value="2" min="1" max="10" style="width:60px;text-align:center"><button class="btn btn-primary" onclick="rollDice()">🎲 掷!</button></div>
+<div class="dice-total" id="total"></div>
+<div class="dice-area" id="diceArea"></div>
+<div style="font-size:.85rem;color:var(--text-secondary)" id="history"></div>
+</div></div><div class="ad-slot">📢 广告位</div></div>
+<script>
+var history=[];
+function rollDice(){
+  var n=parseInt(document.getElementById("diceCount").value)||2,area=document.getElementById("diceArea");
+  area.innerHTML="";var sum=0;
+  for(var i=0;i<n;i++){
+    var d=document.createElement("div");d.className="dice rolling";area.appendChild(d);
+  }
+  var rolls=[];for(var i=0;i<10;i++){rolls.push(Math.floor(Math.random()*6)+1)}
+  var idx=0;
+  var interval=setInterval(function(){
+    var ds=area.children;for(var i=0;i<ds.length;i++){ds[i].textContent=["⚀","⚁","⚂","⚃","⚄","⚅"][Math.floor(Math.random()*6)]}
+    idx++;if(idx>=10){clearInterval(interval);var sum2=0,vals=[];
+      for(var i=0;i<ds.length;i++){var v=Math.floor(Math.random()*6)+1;ds[i].textContent=["⚀","⚁","⚂","⚃","⚄","⚅"][v-1];ds[i].classList.remove("rolling");sum2+=v;vals.push(v)}
+      document.getElementById("total").textContent="总和: "+sum2;
+      history.unshift(vals.join("+")+"="+sum2);if(history.length>10)history.pop();
+      document.getElementById("history").innerHTML="最近: "+history.slice(0,5).join(" | ");
+    }
+  },80);
+}
+rollDice();
+</script></body></html>
