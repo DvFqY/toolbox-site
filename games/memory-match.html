@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>记忆翻牌 - 在线工具箱</title>
+<link rel="stylesheet" href="../css/style.css">
+<style>
+.memory-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;max-width:420px;margin:0 auto}
+.memory-card{aspect-ratio:1;border-radius:10px;cursor:pointer;font-size:2rem;display:flex;align-items:center;justify-content:center;transition:transform .4s,background .3s;user-select:none;perspective:600px}
+.memory-card .inner{width:100%;height:100%;position:relative;transition:transform .4s;transform-style:preserve-3d}
+.memory-card.flipped .inner{transform:rotateY(180deg)}
+.memory-card .front,.memory-card .back{position:absolute;inset:0;border-radius:10px;display:flex;align-items:center;justify-content:center;backface-visibility:hidden}
+.memory-card .front{background:linear-gradient(135deg,#6366f1,#8b5cf6);color:white;font-size:1.6rem}
+.memory-card .back{background:#fff;border:2px solid #e2e8f0;transform:rotateY(180deg);font-size:2.2rem}
+.memory-card.matched .back{background:#d1fae5;border-color:#10b981}
+@media(max-width:400px){.memory-grid{grid-template-columns:repeat(3,1fr);gap:8px}.memory-card{font-size:1.5rem}}
+</style>
+</head>
+<body>
+<div class="tool-page">
+  <a href="../index.html" class="back-link">← 返回工具箱</a>
+  <div class="tool-header"><h1>🃏 记忆翻牌</h1><p class="desc">点击翻开卡片，找到所有匹配的对子</p></div>
+  <div class="tool-body">
+    <div class="guess-wrap">
+      <div class="game-ui">
+        <div class="score-box"><div class="score-val" id="moves">0</div><div class="score-lbl">步数</div></div>
+        <div class="score-box"><div class="score-val" id="pairs">0/8</div><div class="score-lbl">已配对</div></div>
+      </div>
+      <div class="memory-grid" id="memGrid"></div>
+      <div class="btn-group"><button class="btn btn-primary" onclick="newGame()">🔄 新游戏</button></div>
+    </div>
+  </div>
+  <div class="ad-slot">📢 广告位</div>
+</div>
+<div style="margin-top:16px;font-size:.85rem;color:var(--text-secondary);text-align:center">
+  <span>👀 本站总访问 <span id="busuanzi_value_site_pv"></span> 次 · <span id="busuanzi_value_site_uv"></span> 人</span>
+</div>
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<script>
+var emojis=["🐶","🐱","🐼","🦊","🐸","🐵","🦄","🐙","🐶","🐱","🐼","🦊","🐸","🐵","🦄","🐙"];
+var cards=[],flipped=[],matched=[],moves=0,locked=false;
+function shuffle(a){for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=a[i];a[i]=a[j];a[j]=t}return a}
+function render(){
+  var grid=document.getElementById("memGrid");
+  grid.innerHTML="";
+  cards.forEach(function(card,idx){
+    var el=document.createElement("div");el.className="memory-card";
+    if(flipped[idx]||matched[idx])el.classList.add("flipped");
+    if(matched[idx])el.classList.add("matched");
+    el.innerHTML='<div class="inner"><div class="front">?</div><div class="back">'+card+'</div></div>';
+    el.addEventListener("click",function(){flipCard(idx)});
+    grid.appendChild(el);
+  });
+}
+function flipCard(idx){
+  if(locked||flipped[idx]||matched[idx])return;
+  flipped[idx]=true;render();
+  var open=[];flipped.forEach(function(f,i){if(f&&!matched[i])open.push(i)});
+  if(open.length===2){
+    moves++;document.getElementById("moves").textContent=moves;
+    if(cards[open[0]]===cards[open[1]]){
+      matched[open[0]]=matched[open[1]]=true;
+      var p=matched.filter(Boolean).length/2;
+      document.getElementById("pairs").textContent=p+"/8";
+      if(p===8){
+        setTimeout(function(){
+          var ov=document.createElement("div");ov.className="overlay";ov.innerHTML='<div class="overlay-msg"><h2>🎉 全部配对成功!</h2><p>用了 <b>'+moves+'</b> 步</p><button class="btn btn-primary" style="margin-top:12px" onclick="this.closest(\`.overlay\`).remove();newGame()">再来一局</button></div>';
+          document.body.appendChild(ov);
+        },400);
+      }
+    }else{
+      locked=true;
+      setTimeout(function(){flipped[open[0]]=flipped[open[1]]=false;locked=false;render()},700);
+    }
+  }
+}
+function newGame(){
+  cards=shuffle(emojis.slice());flipped=Array(16).fill(false);matched=Array(16).fill(false);moves=0;locked=false;
+  document.getElementById("moves").textContent="0";document.getElementById("pairs").textContent="0/8";
+  document.querySelectorAll(".overlay").forEach(function(o){o.remove()});
+  render();
+}
+newGame();
+</script>
+</body>
+</html>
