@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>大小写转换 - 在线工具箱</title>
+<meta name="description" content="在线英文大小写转换工具：大写、小写、首字母大写、驼峰命名等。">
+<link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+<div class="tool-page">
+  <a href="../index.html" class="back-link">← 返回工具箱</a>
+  <div class="tool-header"><h1>大小写转换</h1><p class="desc">英文大小写转换，支持多种命名风格</p></div>
+  <div class="tool-body">
+    <div class="form-group"><label>输入文本</label><textarea id="input" placeholder="输入英文文本...">hello world, this is a sample text.</textarea></div>
+    <div class="btn-group">
+      <button class="btn btn-primary btn-sm" onclick="convert('upper')">ALL UPPER CASE</button>
+      <button class="btn btn-secondary btn-sm" onclick="convert('lower')">all lower case</button>
+      <button class="btn btn-secondary btn-sm" onclick="convert('title')">Title Case</button>
+      <button class="btn btn-secondary btn-sm" onclick="convert('sentence')">Sentence case</button>
+      <button class="btn btn-secondary btn-sm" onclick="convert('camel')">camelCase</button>
+      <button class="btn btn-secondary btn-sm" onclick="convert('pascal')">PascalCase</button>
+      <button class="btn btn-secondary btn-sm" onclick="convert('snake')">snake_case</button>
+      <button class="btn btn-secondary btn-sm" onclick="convert('kebab')">kebab-case</button>
+      <button class="btn btn-secondary btn-sm" onclick="convert('toggle')">tOGGLE cASE</button>
+    </div>
+    <div class="result-label">转换结果 <button class="copy-btn" onclick="copyResult()">📋 复制</button></div>
+    <div class="result-area" id="output"></div>
+  </div>
+  <div class="ad-slot">📢 广告位</div>
+</div>
+<div style="margin-top:16px;font-size:.85rem;color:var(--text-secondary);text-align:center">
+  <span>👀 本站总访问 <span id="busuanzi_value_site_pv"></span> 次 · <span id="busuanzi_value_site_uv"></span> 人</span>
+</div>
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<script>
+var inp=document.getElementById("input"),out=document.getElementById("output");
+function convert(type){
+  var t=inp.value;
+  switch(type){
+    case "upper":out.textContent=t.toUpperCase();break;
+    case "lower":out.textContent=t.toLowerCase();break;
+    case "title":out.textContent=t.replace(/\w\S*/g,function(w){return w.charAt(0).toUpperCase()+w.slice(1).toLowerCase()});break;
+    case "sentence":out.textContent=t.toLowerCase().replace(/(^\s*\w|[.!?]\s+\w)/g,function(c){return c.toUpperCase()});break;
+    case "camel":out.textContent=t.toLowerCase().replace(/[^a-zA-Z0-9]+(.)/g,function(m,chr){return chr.toUpperCase()});break;
+    case "pascal":out.textContent=t.toLowerCase().replace(/(?:^|[^a-zA-Z0-9]+)(.)/g,function(m,chr){return chr.toUpperCase()});break;
+    case "snake":out.textContent=t.toLowerCase().replace(/[^a-zA-Z0-9]+/g,"_").replace(/^_|_$/g,"");break;
+    case "kebab":out.textContent=t.toLowerCase().replace(/[^a-zA-Z0-9]+/g,"-").replace(/^-|-$/g,"");break;
+    case "toggle":out.textContent=t.split("").map(function(c){return c===c.toUpperCase()?c.toLowerCase():c.toUpperCase()}).join("");break;
+  }
+}
+function copyResult(){var t=out.textContent;if(!t)return;navigator.clipboard.writeText(t).then(function(){var b=event.target;b.textContent="✅ 已复制";setTimeout(function(){b.textContent="📋 复制"},2000)})}
+convert("upper");
+</script>
+</body>
+</html>
