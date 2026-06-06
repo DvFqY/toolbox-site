@@ -1,36 +1,43 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>URL 编解码 - 在线工具箱</title>
-<meta name="description" content="在线 URL 编码解码工具，处理 URL 中的特殊字符和中文参数。">
+<title>URL 缂栬В鐮?- 鍦ㄧ嚎宸ュ叿绠?/title>
+<meta name="description" content="鍦ㄧ嚎 URL 缂栫爜瑙ｇ爜宸ュ叿锛屽鐞?URL 涓殑鐗规畩瀛楃鍜屼腑鏂囧弬鏁般€?>
 <link rel="stylesheet" href="../css/style.css">
 </head>
 <body>
 <div class="tool-page">
-  <a href="../index.html" class="back-link">← 返回工具箱</a>
-  <div class="tool-header"><h1>URL 编解码</h1><p class="desc">URL Encode / Decode，处理 URL 中特殊字符和中文参数</p></div>
+  <a href="../index.html" class="back-link">鈫?杩斿洖宸ュ叿绠?/a>
+  <div class="tool-header"><h1>URL 缂栬В鐮?/h1><p class="desc">URL Encode / Decode锛屽鐞?URL 涓壒娈婂瓧绗﹀拰涓枃鍙傛暟</p></div>
   <div class="tool-body">
-    <div class="form-group"><label>输入文本或 URL</label><textarea id="input" placeholder="输入要编码或解码的 URL 文本..."></textarea></div>
+    <div class="form-group"><label>杈撳叆鏂囨湰鎴?URL</label><textarea id="input" placeholder="杈撳叆瑕佺紪鐮佹垨瑙ｇ爜鐨?URL 鏂囨湰..."></textarea></div>
     <div class="btn-group">
-      <button class="btn btn-primary" onclick="doEncode()">🔒 URL 编码 (Encode)</button>
-      <button class="btn btn-secondary" onclick="doDecode()">🔓 URL 解码 (Decode)</button>
-      <button class="btn btn-secondary" onclick="doEncodeAll()">🔐 完整编码 (含特殊字符)</button>
-      <button class="btn btn-secondary" onclick="clearAll()">🗑 清空</button>
+      <button class="btn btn-primary" onclick="doEncode()">馃敀 URL 缂栫爜 (Encode)</button>
+      <button class="btn btn-secondary" onclick="doDecode()">馃敁 URL 瑙ｇ爜 (Decode)</button>
+      <button class="btn btn-secondary" onclick="doEncodeAll()">馃攼 瀹屾暣缂栫爜 (鍚壒娈婂瓧绗?</button>
+      <button class="btn btn-secondary" onclick="clearAll()">馃棏 娓呯┖</button>
     </div>
-    <div class="result-label">输出 <button class="copy-btn" onclick="copyResult()">📋 复制</button></div>
+    <div class="result-label">杈撳嚭 <button class="copy-btn" onclick="copyResult()">馃搵 澶嶅埗</button></div>
     <div class="result-area" id="output"></div>
   </div>
-  <div class="ad-slot">📢 广告位</div>
+  <div class="ad-slot">馃摙 骞垮憡浣?/div>
 </div>
 <script>
 var inEl=document.getElementById("input"),out=document.getElementById("output");
 function doEncode(){out.textContent=encodeURIComponent(inEl.value)}
-function doDecode(){try{out.textContent=decodeURIComponent(inEl.value)}catch(e){out.textContent="解码失败："+e.message}}
+function doDecode(){try{out.textContent=decodeURIComponent(inEl.value)}catch(e){out.textContent="瑙ｇ爜澶辫触锛?+e.message}}
 function doEncodeAll(){out.textContent=encodeURIComponent(inEl.value).replace(/[!'()*]/g,function(c){return"%27".repeat(c==="`"`?1:0)||"%"+c.charCodeAt(0).toString(16).toUpperCase()})}
 function clearAll(){inEl.value="";out.textContent=""}
-function copyResult(){var t=out.textContent;if(!t)return;navigator.clipboard.writeText(t).then(function(){var b=event.target;b.textContent="✅ 已复制";b.classList.add("copied");setTimeout(function(){b.textContent="📋 复制";b.classList.remove("copied")},2000)})}
+function copyResult(){var t=out.textContent;if(!t)return;navigator.clipboard.writeText(t).then(function(){var b=event.target;b.textContent="鉁?宸插鍒?;b.classList.add("copied");setTimeout(function(){b.textContent="馃搵 澶嶅埗";b.classList.remove("copied")},2000)})}
 </script>
+
+<!-- 璁块棶缁熻 -->
+<div style="margin-top:16px;font-size:.85rem;color:var(--text-secondary)">
+  <span>馃憖 鏈珯鎬昏闂?<span id="busuanzi_value_site_pv"></span> 娆?路 
+  <span id="busuanzi_value_site_uv"></span> 浜?/span>
+</div>
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
 </body>
 </html>
