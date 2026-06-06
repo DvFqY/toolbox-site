@@ -48,7 +48,7 @@
   btn.id = 'themeToggle';
   btn.innerHTML = theme === 'dark' ? '☀️' : '🌙';
   btn.title = theme === 'dark' ? '切换浅色模式' : '切换深色模式';
-  btn.style.cssText = 'position:fixed;bottom:20px;right:74px;width:44px;height:44px;'
+  btn.style.cssText = 'position:fixed;bottom:68px;right:20px;width:44px;height:44px;'
     + 'border-radius:50%;background:var(--surface,#fff);border:1.5px solid var(--border,#e2e8f0);'
     + 'display:flex;align-items:center;justify-content:center;font-size:1.2rem;cursor:pointer;'
     + 'z-index:9999;transition:all .25s;box-shadow:0 2px 12px rgba(0,0,0,.1);user-select:none;'
