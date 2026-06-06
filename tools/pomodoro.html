@@ -1,0 +1,44 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>番茄工作钟 - 在线工具箱</title><link rel="stylesheet" href="../css/style.css"><style>
+.pomo-wrap{display:flex;flex-direction:column;align-items:center;gap:20px}
+.pomo-ring{position:relative;width:200px;height:200px}
+.pomo-ring svg{transform:rotate(-90deg)}
+.pomo-ring .bg{fill:none;stroke:var(--border);stroke-width:8}
+.pomo-ring .fg{fill:none;stroke:var(--primary);stroke-width:8;stroke-linecap:round;transition:stroke-dashoffset .5s}
+.pomo-time{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.pomo-time .min{font-size:3rem;font-weight:800;color:var(--text);line-height:1}
+.pomo-time .sec{font-size:1.2rem;color:var(--text-secondary)}
+.pomo-time .label{font-size:.8rem;color:var(--text-secondary);margin-top:4px}
+.pomo-btns{display:flex;gap:8px}
+</style></head><body>
+<div class="tool-page"><a href="../index.html" class="back-link">← 返回工具箱</a><div class="tool-header"><h1>🍅 番茄工作钟</h1><p class="desc">25分钟专注 · 5分钟休息 · 提升效率</p></div>
+<div class="tool-body"><div class="pomo-wrap">
+<div class="pomo-ring">
+<svg width="200" height="200" viewBox="0 0 200 200"><circle class="bg" cx="100" cy="100" r="90"/><circle class="fg" id="progress" cx="100" cy="100" r="90" stroke-dasharray="565.48" stroke-dashoffset="0"/></svg>
+<div class="pomo-time"><div class="min" id="min">25</div><div class="sec" id="sec">00</div><div class="label" id="mode">🍅 专注</div></div>
+</div>
+<div class="pomo-btns"><button class="btn btn-primary" id="btnStart">▶ 开始</button><button class="btn btn-secondary" id="btnReset">↺ 重置</button></div>
+<div style="display:flex;gap:8px"><button class="btn btn-secondary btn-sm" onclick="setTimer(25)">🍅 25分</button><button class="btn btn-secondary btn-sm" onclick="setTimer(5)">☕ 5分</button><button class="btn btn-secondary btn-sm" onclick="setTimer(45)">🔥 45分</button></div>
+<div style="font-size:.85rem;color:var(--text-secondary)" id="sessions"></div>
+</div></div><div class="ad-slot">📢 广告位</div></div>
+<script>
+var total=25*60,remaining=total,running=false,timer=null,sessions=0;
+var circle=565.48;
+function updateDisplay(){
+  var m=Math.floor(remaining/60),s=remaining%60;
+  document.getElementById("min").textContent=m;document.getElementById("sec").textContent=s.toString().padStart(2,"0");
+  document.getElementById("progress").style.strokeDashoffset=circle*(1-remaining/total);
+}
+function setTimer(min){if(running)return;total=min*60;remaining=total;updateDisplay();
+  document.getElementById("mode").textContent=min>=25?"🍅 专注":"☕ 休息"}
+document.getElementById("btnStart").addEventListener("click",function(){
+  if(running){running=false;clearInterval(timer);this.textContent="▶ 继续";return}
+  running=true;this.textContent="⏸ 暂停";
+  timer=setInterval(function(){remaining--;updateDisplay();
+    if(remaining<=0){running=false;clearInterval(timer);document.getElementById("btnStart").textContent="▶ 开始";
+      sessions++;document.getElementById("sessions").textContent="已完成 "+sessions+" 个番茄";
+      try{var a=new AudioContext();[523,659,784].forEach(function(f,i){var o=a.createOscillator(),g=a.createGain();o.type="sine";o.frequency.value=f;g.gain.setValueAtTime(.08,a.currentTime+i*.15);g.gain.exponentialRampToValueAtTime(.001,a.currentTime+i*.15+.3);o.connect(g);g.connect(a.destination);o.start(a.currentTime+i*.15);o.stop(a.currentTime+i*.15+.35)})}catch(e){}
+    }},1000);
+});
+document.getElementById("btnReset").addEventListener("click",function(){running=false;clearInterval(timer);remaining=total;updateDisplay();document.getElementById("btnStart").textContent="▶ 开始"});
+updateDisplay();
+</script></body></html>
