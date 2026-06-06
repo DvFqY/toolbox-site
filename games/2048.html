@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>2048 - 在线工具箱</title>
+<link rel="stylesheet" href="../css/style.css">
+<style>
+.game-2048{display:flex;flex-direction:column;align-items:center;gap:12px}
+.board{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;background:#bbada0;padding:10px;border-radius:12px;width:min(380px,90vw);height:min(380px,90vw)}
+.tile{aspect-ratio:1;border-radius:8px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:clamp(1rem,5vw,2rem);color:#776e65;transition:all .15s ease;position:relative}
+.tile-0{background:#cdc1b4}
+.tile-2{background:#eee4da}
+.tile-4{background:#ede0c8}
+.tile-8{background:#f2b179;color:#f9f6f2}
+.tile-16{background:#f59563;color:#f9f6f2}
+.tile-32{background:#f67c5f;color:#f9f6f2}
+.tile-64{background:#f65e3b;color:#f9f6f2}
+.tile-128{background:#edcf72;color:#f9f6f2;font-size:clamp(.9rem,4vw,1.6rem);box-shadow:0 0 20px rgba(237,207,114,.4)}
+.tile-256{background:#edcc61;color:#f9f6f2;font-size:clamp(.9rem,4vw,1.6rem);box-shadow:0 0 25px rgba(237,204,97,.5)}
+.tile-512{background:#edc850;color:#f9f6f2;font-size:clamp(.9rem,4vw,1.6rem);box-shadow:0 0 30px rgba(237,200,80,.5)}
+.tile-1024{background:#edc53f;color:#f9f6f2;font-size:clamp(.7rem,3.5vw,1.3rem);box-shadow:0 0 35px rgba(237,197,63,.6)}
+.tile-2048{background:#edc22e;color:#f9f6f2;font-size:clamp(.7rem,3.5vw,1.3rem);box-shadow:0 0 40px rgba(237,194,46,.7);animation:winPulse .8s infinite}
+@keyframes winPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.05)}}
+.game-2048 .score-box .score-val{color:#f59563}
+.overlay{position:fixed;inset:0;background:rgba(255,255,255,.7);display:flex;align-items:center;justify-content:center;z-index:10;backdrop-filter:blur(4px)}
+.overlay-msg{text-align:center;background:white;padding:32px 48px;border-radius:16px;box-shadow:0 20px 60px rgba(0,0,0,.15)}
+.overlay-msg h2{font-size:2rem;margin-bottom:12px}
+</style>
+</head>
+<body>
+<div class="tool-page">
+  <a href="../index.html" class="back-link">← 返回工具箱</a>
+  <div class="tool-header"><h1>🔢 2048</h1><p class="desc">滑动合并数字，看看你能拿到多少分</p></div>
+  <div class="tool-body">
+    <div class="game-2048">
+      <div class="game-ui">
+        <div class="score-box"><div class="score-val" id="score2048">0</div><div class="score-lbl">得分</div></div>
+        <div class="score-box"><div class="score-val" id="best2048">0</div><div class="score-lbl">最高分</div></div>
+      </div>
+      <div class="board" id="board"></div>
+      <div class="btn-group"><button class="btn btn-primary" onclick="newGame()">🔄 新游戏</button></div>
+      <p class="hint">方向键移动 · 手机端滑动操作</p>
+    </div>
+  </div>
+  <div class="ad-slot">📢 广告位</div>
+</div>
+<div style="margin-top:16px;font-size:.85rem;color:var(--text-secondary);text-align:center">
+  <span>👀 本站总访问 <span id="busuanzi_value_site_pv"></span> 次 · <span id="busuanzi_value_site_uv"></span> 人</span>
+</div>
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<script>
+(function(){
+var board=document.getElementById("board"),scoreEl=document.getElementById("score2048"),bestEl=document.getElementById("best2048");
+var grid=[],score=0,best=0,size=4;
+function initGrid(){grid=Array(size);for(var i=0;i<size;i++){grid[i]=Array(size).fill(0)}}
+function render(){
+  board.innerHTML="";
+  for(var r=0;r<size;r++)for(var c=0;c<size;c++){
+    var tile=document.createElement("div");
+    tile.className="tile tile-"+grid[r][c];
+    tile.textContent=grid[r][c]||"";
+    board.appendChild(tile);
+  }
+  scoreEl.textContent=score;
+}
+function addRandom(){
+  var empty=[];for(var r=0;r<size;r++)for(var c=0;c<size;c++)if(!grid[r][c])empty.push({r:r,c:c});
+  if(!empty.length)return false;
+  var pos=empty[Math.floor(Math.random()*empty.length)];
+  grid[pos.r][pos.c]=Math.random()<.9?2:4;
+  return true;
+}
+function slide(row){
+  var arr=row.filter(function(v){return v!==0});
+  for(var i=0;i<arr.length-1;i++){if(arr[i]===arr[i+1]){arr[i]*=2;score+=arr[i];arr[i+1]=0;i++}}
+  arr=arr.filter(function(v){return v!==0});
+  while(arr.length<size)arr.push(0);
+  return arr;
+}
+function move(dir){
+  var old=grid.map(function(r){return r.slice()});
+  if(dir==="left"){for(var i=0;i<size;i++)grid[i]=slide(grid[i])}
+  else if(dir==="right"){for(var i=0;i<size;i++){grid[i]=slide(grid[i].slice().reverse()).reverse()}}
+  else if(dir==="up"){for(var c=0;c<size;c++){var col=[];for(var r=0;r<size;r++)col.push(grid[r][c]);col=slide(col);for(var r=0;r<size;r++)grid[r][c]=col[r]}}
+  else if(dir==="down"){for(var c=0;c<size;c++){var col=[];for(var r=0;r<size;r++)col.push(grid[r][c]);col=slide(col.reverse()).reverse();for(var r=0;r<size;r++)grid[r][c]=col[r]}}
+  var changed=false;for(var i=0;i<size;i++)for(var j=0;j<size;j++)if(grid[i][j]!==old[i][j])changed=true;
+  if(changed){addRandom();render()}
+  if(isGameOver())showGameOver();
+  if(score>best){best=score;localStorage.setItem("best2048",best);bestEl.textContent=best}
+}
+function isGameOver(){
+  for(var r=0;r<size;r++)for(var c=0;c<size;c++){
+    if(!grid[r][c])return false;
+    if(c<size-1&&grid[r][c]===grid[r][c+1])return false;
+    if(r<size-1&&grid[r][c]===grid[r+1][c])return false;
+  }
+  return true;
+}
+function showGameOver(){
+  setTimeout(function(){
+    var ov=document.createElement("div");ov.className="overlay";ov.innerHTML='<div class="overlay-msg"><h2>游戏结束</h2><p>得分: '+score+'</p><button class="btn btn-primary" style="margin-top:12px" onclick="this.closest(\`.overlay\`).remove();newGame()">再来一局</button></div>';
+    document.body.appendChild(ov);
+  },300);
+}
+function newGame(){
+  document.querySelectorAll(".overlay").forEach(function(o){o.remove()});
+  initGrid();score=0;addRandom();addRandom();render();
+  best=parseInt(localStorage.getItem("best2048")||"0");bestEl.textContent=best;
+}
+document.addEventListener("keydown",function(e){
+  if(e.code==="ArrowUp"){e.preventDefault();move("up")}else
+  if(e.code==="ArrowDown"){e.preventDefault();move("down")}else
+  if(e.code==="ArrowLeft"){e.preventDefault();move("left")}else
+  if(e.code==="ArrowRight"){e.preventDefault();move("right")}
+});
+// Touch swipe
+var tsX=0,tsY=0;board.addEventListener("touchstart",function(e){tsX=e.touches[0].clientX;tsY=e.touches[0].clientY});
+board.addEventListener("touchend",function(e){
+  var dx=e.changedTouches[0].clientX-tsX,dy=e.changedTouches[0].clientY-tsY;
+  if(Math.abs(dx)>Math.abs(dy)){move(dx>20?"right":dx<-20?"left":"")}
+  else{move(dy>20?"down":dy<-20?"up":"")}
+});
+newGame();
+})();
+</script>
+</body>
+</html>
