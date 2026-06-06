@@ -1,0 +1,47 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>决策助手 - 在线工具箱</title><link rel="stylesheet" href="../css/style.css"><style>
+.decide-wrap{display:flex;flex-direction:column;align-items:center;gap:16px}
+.coin{width:100px;height:100px;border-radius:50%;background:linear-gradient(135deg,#fbbf24,#f59e0b);display:flex;align-items:center;justify-content:center;font-size:3rem;box-shadow:0 4px 20px rgba(251,191,36,.3);transition:transform .6s;cursor:pointer;user-select:none}
+.coin.flipping{animation:coinFlip .6s ease-in-out}
+@keyframes coinFlip{0%{transform:rotateY(0)}50%{transform:rotateY(720deg) scale(1.2)}100%{transform:rotateY(1440deg)}}
+.options{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+.opt-btn{padding:8px 16px;border-radius:20px;border:1.5px solid var(--border);background:var(--surface);cursor:pointer;transition:all .2s;font-size:.9rem}
+.opt-btn:hover{border-color:var(--primary)}
+.options input{flex:1;min-width:120px;padding:8px 12px;border-radius:20px;border:1.5px solid var(--border);font-size:.9rem;text-align:center}
+</style></head><body>
+<div class="tool-page"><a href="../index.html" class="back-link">← 返回工具箱</a><div class="tool-header"><h1>🤔 决策助手</h1><p class="desc">选择困难症救星 · 硬币决策 · 自定义选项随机选</p></div>
+<div class="tool-body"><div class="decide-wrap">
+<div class="coin" id="coin" onclick="flipCoin()">🪙</div>
+<div id="coinResult" style="font-size:1.1rem;font-weight:700;min-height:28px;color:var(--primary)"></div>
+<div style="font-weight:600;margin-top:4px">或者让我帮你选一个:</div>
+<div class="options"><input type="text" id="optInput" placeholder="输入选项，回车添加"><button class="btn btn-primary btn-sm" onclick="addOpt()">+</button></div>
+<div class="options" id="optList"></div>
+<button class="btn btn-primary" onclick="randomPick()">🎯 随机选一个!</button>
+<div id="pickResult" style="font-size:1.3rem;font-weight:800;color:var(--primary);min-height:32px"></div>
+</div></div><div class="ad-slot">📢 广告位</div></div>
+<script>
+var opts=["吃饭","看电影","打游戏","学习","睡觉"];
+function flipCoin(){
+  var c=document.getElementById("coin"),r=document.getElementById("coinResult");
+  c.classList.add("flipping");r.textContent="🔄 ...";
+  setTimeout(function(){c.classList.remove("flipping");
+    var v=Math.random()>.5?"正面":"反面";c.textContent=v==="正面"?"🪙":"💰";
+    r.innerHTML="结果是: <b>"+v+"</b>";
+  },600);
+}
+function addOpt(){
+  var v=document.getElementById("optInput").value.trim();if(!v)return;
+  opts.push(v);document.getElementById("optInput").value="";renderOpts();
+}
+function removeOpt(i){opts.splice(i,1);if(!opts.length)opts=["选项1","选项2"];renderOpts()}
+function randomPick(){
+  if(!opts.length)return;var pick=opts[Math.floor(Math.random()*opts.length)];
+  var el=document.getElementById("pickResult");el.textContent="🤔...";
+  var i=0,interval=setInterval(function(){el.textContent=opts[Math.floor(Math.random()*opts.length)];i++;if(i>=15){clearInterval(interval);el.innerHTML="🎉 <b>"+pick+"</b>!"}},60);
+}
+function renderOpts(){
+  var cont=document.getElementById("optList");cont.innerHTML="";
+  opts.forEach(function(o,i){var btn=document.createElement("button");btn.className="opt-btn";btn.textContent=o;btn.title="点击移除";btn.addEventListener("click",function(){removeOpt(i)});cont.appendChild(btn)});
+}
+document.getElementById("optInput").addEventListener("keydown",function(e){if(e.key==="Enter")addOpt()});
+renderOpts();
+</script></body></html>
