@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>文本去重 - 在线工具箱</title>
+<meta name="description" content="在线文本去重工具：按行去重、去除空行、排序、统计重复行。">
+<link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+<div class="tool-page">
+  <a href="../index.html" class="back-link">← 返回工具箱</a>
+  <div class="tool-header"><h1>文本去重</h1><p class="desc">按行去重，支持去除空行、忽略大小写、排序</p></div>
+  <div class="tool-body">
+    <div class="form-group"><label>输入文本（每行一条）</label><textarea id="input" placeholder="粘贴文本...">苹果
+香蕉
+苹果
+橘子
+香蕉
+西瓜
+葡萄
+橘子</textarea></div>
+    <div style="margin-bottom:12px;display:flex;gap:16px;flex-wrap:wrap">
+      <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:.9rem"><input type="checkbox" id="ignoreCase"> 忽略大小写</label>
+      <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:.9rem"><input type="checkbox" id="trimSpace"> 去除首尾空格</label>
+      <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:.9rem"><input type="checkbox" id="removeEmpty"> 去除空行</label>
+      <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:.9rem"><input type="checkbox" id="sortResult"> 排序</label>
+    </div>
+    <div class="btn-group">
+      <button class="btn btn-primary" onclick="dedup()">🔄 去重</button>
+      <button class="btn btn-secondary" onclick="showDupes()">📊 显示重复项</button>
+      <button class="btn btn-secondary" onclick="copyResult()">📋 复制结果</button>
+    </div>
+    <div id="stats" style="margin-top:12px;font-size:.85rem;color:var(--text-secondary)"></div>
+    <div class="result-area" id="output"></div>
+  </div>
+  <div class="ad-slot">📢 广告位</div>
+</div>
+<div style="margin-top:16px;font-size:.85rem;color:var(--text-secondary);text-align:center">
+  <span>👀 本站总访问 <span id="busuanzi_value_site_pv"></span> 次 · <span id="busuanzi_value_site_uv"></span> 人</span>
+</div>
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<script>
+var inp=document.getElementById("input"),out=document.getElementById("output"),stats=document.getElementById("stats");
+function processLines(){
+  var lines=inp.value.split("\n");
+  var ic=document.getElementById("ignoreCase").checked;
+  var ts=document.getElementById("trimSpace").checked;
+  var re=document.getElementById("removeEmpty").checked;
+  var sr=document.getElementById("sortResult").checked;
+  if(ts)lines=lines.map(function(l){return l.trim()});
+  if(re)lines=lines.filter(function(l){return l!==""});
+  return {lines:lines,ic:ic,sr:sr};
+}
+function dedup(){
+  var p=processLines();
+  var seen=new Set(),result=[],dupCount=0;
+  p.lines.forEach(function(l){
+    var key=p.ic?l.toLowerCase():l;
+    if(!seen.has(key)){seen.add(key);result.push(l)}else{dupCount++}
+  });
+  if(p.sr)result.sort(function(a,b){return p.ic?a.toLowerCase().localeCompare(b.toLowerCase()):a.localeCompare(b)});
+  out.textContent=result.join("\n");
+  stats.innerHTML="原始 <b>"+p.lines.length+"</b> 行 → 去重后 <b>"+result.length+"</b> 行 (去除 <b>"+dupCount+"</b> 条重复)";
+}
+function showDupes(){
+  var p=processLines();
+  var counts={};p.lines.forEach(function(l){var key=p.ic?l.toLowerCase():l;counts[key]=counts[key]||{text:l,count:0};counts[key].count++});
+  var dupes=Object.values(counts).filter(function(v){return v.count>1}).sort(function(a,b){return b.count-a.count});
+  if(dupes.length===0){out.textContent="没有重复项";stats.textContent="";return}
+  out.textContent=dupes.map(function(d){return d.text+" (出现 "+d.count+" 次)"}).join("\n");
+  stats.innerHTML="共 <b>"+dupes.length+"</b> 组重复项";
+}
+function copyResult(){var t=out.textContent;if(!t)return;navigator.clipboard.writeText(t).then(function(){var b=event.target;b.textContent="✅ 已复制";setTimeout(function(){b.textContent="📋 复制结果"},2000)})}
+dedup();
+</script>
+</body>
+</html>
