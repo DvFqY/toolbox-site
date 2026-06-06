@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>正则表达式测试 - 在线工具箱</title>
+<meta name="description" content="在线正则表达式测试工具，实时匹配高亮，支持常用标志。">
+<link rel="stylesheet" href="../css/style.css">
+<style>
+.regex-match{background:#d1fae5;padding:2px 4px;border-radius:3px;font-weight:600}
+.regex-groups{margin-top:12px;font-size:.85rem}
+.regex-group-item{background:var(--primary-light);padding:4px 8px;border-radius:4px;margin:2px;display:inline-block;font-family:"SF Mono",monospace}
+.flags{display:flex;gap:12px;margin-bottom:12px;flex-wrap:wrap}
+.flag{display:flex;align-items:center;gap:4px;cursor:pointer;font-size:.9rem}
+</style>
+</head>
+<body>
+<div class="tool-page">
+  <a href="../index.html" class="back-link">← 返回工具箱</a>
+  <div class="tool-header"><h1>正则表达式测试</h1><p class="desc">在线测试正则表达式，实时高亮匹配结果</p></div>
+  <div class="tool-body">
+    <div class="form-group"><label>正则表达式</label><input type="text" id="regexInput" placeholder="/[a-zA-Z]+/g" oninput="testRegex()" style="font-family:monospace"></div>
+    <div class="flags">
+      <label class="flag"><input type="checkbox" id="flagG" checked onchange="testRegex()"> 全局 g</label>
+      <label class="flag"><input type="checkbox" id="flagI" onchange="testRegex()"> 忽略大小写 i</label>
+      <label class="flag"><input type="checkbox" id="flagM" onchange="testRegex()"> 多行 m</label>
+      <label class="flag"><input type="checkbox" id="flagS" onchange="testRegex()"> 单行 s</label>
+    </div>
+    <div class="form-group"><label>测试文本</label><textarea id="textInput" oninput="testRegex()">Hello World! 我的邮箱是 test@example.com，电话 138-0000-1234。
+网站 https://www.example.com 不错。</textarea></div>
+    <div class="result-label">匹配结果</div>
+    <div class="result-area" id="result" style="white-space:pre-wrap;line-height:1.8"></div>
+    <div class="regex-groups" id="groups"></div>
+  </div>
+  <div class="ad-slot">📢 广告位</div>
+</div>
+<div style="margin-top:16px;font-size:.85rem;color:var(--text-secondary);text-align:center">
+  <span>👀 本站总访问 <span id="busuanzi_value_site_pv"></span> 次 · <span id="busuanzi_value_site_uv"></span> 人</span>
+</div>
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<script>
+function testRegex(){
+  var pattern=document.getElementById("regexInput").value;
+  var text=document.getElementById("textInput").value;
+  var resultEl=document.getElementById("result");
+  var groupsEl=document.getElementById("groups");
+  if(!pattern){resultEl.textContent=text;groupsEl.innerHTML="";return}
+  try{
+    var flags="";
+    if(document.getElementById("flagG").checked)flags+="g";
+    if(document.getElementById("flagI").checked)flags+="i";
+    if(document.getElementById("flagM").checked)flags+="m";
+    if(document.getElementById("flagS").checked)flags+="s";
+    var re=new RegExp(pattern,flags);
+    var matches=[];var match;
+    if(flags.includes("g")){
+      while((match=re.exec(text))!==null){matches.push(match);if(match[0]==="")re.lastIndex++}
+    }else{
+      match=re.exec(text);if(match)matches.push(match);
+    }
+    if(matches.length===0){resultEl.textContent=text;groupsEl.innerHTML='<span style="color:var(--text-secondary)">没有匹配</span>';return}
+    var lastIdx=0;var html="";
+    matches.forEach(function(m){
+      html+=escapeHtml(text.slice(lastIdx,m.index));
+      html+='<span class="regex-match">'+escapeHtml(m[0])+"</span>";
+      lastIdx=m.index+m[0].length;
+    });
+    html+=escapeHtml(text.slice(lastIdx));
+    resultEl.innerHTML=html;
+    var groupHtml="匹配数: <b>"+matches.length+"</b> | ";
+    matches.slice(0,5).forEach(function(m,i){
+      groupHtml+='<span class="regex-group-item">#'+(i+1)+": "+escapeHtml(m[0])+"</span> ";
+      if(m.length>1)for(var j=1;j<m.length;j++)if(m[j]!==undefined)groupHtml+='<span class="regex-group-item">$'+j+": "+escapeHtml(m[j])+"</span> ";
+    });
+    if(matches.length>5)groupHtml+="...";
+    groupsEl.innerHTML=groupHtml;
+  }catch(e){
+    resultEl.textContent=text;groupsEl.innerHTML='<span style="color:var(--danger)">正则表达式错误: '+e.message+"</span>";
+  }
+}
+function escapeHtml(s){return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")}
+testRegex();
+</script>
+</body>
+</html>
