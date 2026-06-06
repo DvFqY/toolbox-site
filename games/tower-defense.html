@@ -42,6 +42,10 @@
           <div class="row"><span class="lbl">🗡 击杀</span><span class="val" id="kills">0</span></div>
           <div class="row"><span class="lbl">🏆 通关</span><span class="val" id="cleared">-</span></div>
         </div>
+                <div class="td-info" id="reqPanel">
+          <div style="font-weight:700;font-size:.82rem;margin-bottom:4px">📋 通关要求</div>
+          <div style="font-size:.75rem;color:var(--text-secondary);line-height:1.5" id="reqContent">-</div>
+        </div>
         <div id="towerList" style="display:flex;flex-direction:column;gap:5px"></div>
         <div style="display:flex;flex-direction:column;gap:5px">
           <button class="btn btn-primary btn-sm" id="btnWave">▶ 开始波次</button>
@@ -151,11 +155,20 @@ function initLevel(idx){
   G.towers=[];G.enemies=[];G.projs=[];G.spawnQ=[];G.spawnT=0;G.speed=1;G.selTower=-1;
   G.path=L.path;G.pathSet=new Set();L.path.forEach(function(p){G.pathSet.add(p[0]+","+p[1])});
   G.map=[];for(var r=0;r<ROWS;r++){G.map[r]=[];for(var c=0;c<COLS;c++)G.map[r][c]=0}
-  updateHUD();updateTowerBtns();updateLevelBtns();
+  updateHUD();updateTowerBtns();updateLevelBtns();updateReqPanel();
   document.getElementById("btnWave").textContent="▶ 开始波次";document.getElementById("btnWave").disabled=false;
   document.getElementById("btnSpeed").textContent="⏩ x1";
 }
 
+function updateReqPanel(){
+  var L=LEVELS[G.lvl],lines=[];
+  lines.push("抵御 "+L.waves.length+" 波敌人进攻");
+  var allTypes=new Set();L.waves.forEach(function(w){w.forEach(function(e){allTypes.add(e.t)})});
+  lines.push("敌人: "+Array.from(allTypes).map(function(t){var et=ENEMIES.find(function(e){return e.id===t});return et?et.name:t}).join("、"));
+  lines.push("初始金币: "+L.gold+" | 生命: "+L.lives);
+  lines.push(G.cleared.includes(G.lvl)?"✅ 已通关":"⏳ 未通关");
+  document.getElementById("reqContent").innerHTML=lines.join("<br>");
+}
 function updateHUD(){
   document.getElementById("lives").textContent=G.lives;
   document.getElementById("gold").textContent=G.gold;
