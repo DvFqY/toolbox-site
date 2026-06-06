@@ -36,7 +36,7 @@ function spin(){
   (function anim(){var elapsed=Date.now()-startTime,p=Math.min(1,elapsed/duration);p=1-Math.pow(1-p,3);
     angle=start+target*p;drawWheel();
     if(p<1)requestAnimationFrame(anim);else{spinning=false;var n=prizes.length,arc=Math.PI*2/n;
-      var idx=Math.floor(((Math.PI*2-angle%(Math.PI*2))%(Math.PI*2))/arc)%n;
+      var pointerAngle=(-angle-Math.PI/2)%(Math.PI*2);if(pointerAngle<0)pointerAngle+=Math.PI*2;var idx=Math.floor(pointerAngle/arc)%n;
       document.getElementById("result").innerHTML="🎉 恭喜获得: <b>"+prizes[idx]+"</b>";
     }})();
 }
