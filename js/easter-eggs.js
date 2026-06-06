@@ -1,4 +1,4 @@
-﻿(function(){
+(function(){
   if (window.__easterLoaded) return;
   window.__easterLoaded = true;
 
@@ -125,6 +125,22 @@
         localStorage.setItem("daily_fortune",JSON.stringify({date:today,fortune:nf}));
       });
       document.body.appendChild(w);
+      // Add reset button below fortune
+      var rb = document.createElement("div");
+      rb.style.cssText = "margin-top:4px;font-size:.65rem;color:var(--text-secondary);cursor:pointer;text-align:center;opacity:.6;transition:opacity .2s";
+      rb.textContent = "🐱 重置猫等级";
+      rb.title = "一键重置猫咪进化等级";
+      rb.addEventListener("mouseenter",function(){rb.style.opacity="1"});
+      rb.addEventListener("mouseleave",function(){rb.style.opacity=".6"});
+      rb.addEventListener("click",function(e){
+        e.stopPropagation();
+        localStorage.removeItem("pet_clicks");
+        window.__petLevel = 0;
+        window.__petData = {name:"小猫咪",acc:"",color:"#fbbf24"};
+        rb.textContent = "✅ 已重置";
+        setTimeout(function(){ rb.textContent = "🐱 重置猫等级"; }, 1500);
+      });
+      w.appendChild(rb);
     }
     if (document.body) show();
     else document.addEventListener("DOMContentLoaded", show);
