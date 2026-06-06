@@ -138,13 +138,16 @@
 
   container.addEventListener('pointerdown',function(e){
     dragging=true;container.style.cursor='grabbing';container.setPointerCapture(e.pointerId);
-    startX=e.clientX-petX;startY=e.clientY-(window.innerHeight-80+petY);
+    var rect=container.getBoundingClientRect();
+    startX=e.clientX-rect.left;
+    startY=(window.innerHeight-e.clientY)-parseFloat(container.style.bottom||'80');
     e.preventDefault();e.stopPropagation();
   });
 
   container.addEventListener('pointermove',function(e){
     if(!dragging)return;
-    petX=e.clientX-startX;petY=-(e.clientY-startY)+window.innerHeight-80;
+    petX=e.clientX-startX;
+    petY=(window.innerHeight-e.clientY)-startY-80;
     petX=Math.max(-30,Math.min(window.innerWidth-60,petX));
     petY=Math.max(-window.innerHeight+120,Math.min(250,petY));
     updatePos();
