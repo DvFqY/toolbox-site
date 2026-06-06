@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>JSON 鏍煎紡鍖?- 鍦ㄧ嚎宸ュ叿绠?/title>
-<meta name="description" content="鍦ㄧ嚎 JSON 鏍煎紡鍖栧伐鍏凤細鏍煎紡鍖栥€佸帇缂┿€侀獙璇?JSON 鏁版嵁锛屾敮鎸佽娉曢珮浜拰閿欒鎻愮ず锛屼繚鎶ゆ暟鎹殣绉併€?>
+<title>JSON 格式化 - 在线工具箱</title>
+<meta name="description" content="在线 JSON 格式化工具：格式化、压缩、验证 JSON 数据，支持语法高亮和错误提示，保护数据隐私。">
 <link rel="stylesheet" href="../css/style.css">
 <style>
 .json-key { color: #0550ae; }
@@ -17,27 +17,27 @@
 </head>
 <body>
 <div class="tool-page">
-  <a href="../index.html" class="back-link">鈫?杩斿洖宸ュ叿绠?/a>
+  <a href="../index.html" class="back-link">← 返回工具箱</a>
   <div class="tool-header">
-    <h1>JSON 鏍煎紡鍖?/h1>
-    <p class="desc">鏍煎紡鍖栥€佸帇缂┿€侀獙璇?JSON 鏁版嵁锛岃嚜鍔ㄨ娉曢珮浜?/p>
+    <h1>JSON 格式化</h1>
+    <p class="desc">格式化、压缩、验证 JSON 数据，自动语法高亮</p>
   </div>
   <div class="tool-body">
     <div class="form-group">
-      <label>杈撳叆 JSON 鏂囨湰</label>
-      <textarea id="input" placeholder='{"name":"鍦ㄧ嚎宸ュ叿绠?,"tools":["json","base64"]}'></textarea>
+      <label>输入 JSON 文本</label>
+      <textarea id="input" placeholder='{"name":"在线工具箱","tools":["json","base64"]}'></textarea>
     </div>
     <div class="btn-group">
-      <button class="btn btn-primary" onclick="formatJSON()">鉁?鏍煎紡鍖?/button>
-      <button class="btn btn-secondary" onclick="compressJSON()">馃摝 鍘嬬缉</button>
-      <button class="btn btn-secondary" onclick="validateJSON()">鉁?楠岃瘉</button>
-      <button class="btn btn-secondary" onclick="clearAll()">馃棏 娓呯┖</button>
+      <button class="btn btn-primary" onclick="formatJSON()">✨ 格式化</button>
+      <button class="btn btn-secondary" onclick="compressJSON()">📦 压缩</button>
+      <button class="btn btn-secondary" onclick="validateJSON()">✅ 验证</button>
+      <button class="btn btn-secondary" onclick="clearAll()">🗑 清空</button>
     </div>
     <div id="error" style="color:var(--danger);margin-top:12px;font-size:.9rem;"></div>
-    <div class="result-label">杈撳嚭缁撴灉 <button class="copy-btn" onclick="copyResult()">馃搵 澶嶅埗</button></div>
+    <div class="result-label">输出结果 <button class="copy-btn" onclick="copyResult()">📋 复制</button></div>
     <div class="result-area" id="output"></div>
   </div>
-  <div class="ad-slot">馃摙 骞垮憡浣?/div>
+  <div class="ad-slot">📢 广告位</div>
 </div>
 <script>
 var input = document.getElementById("input");
@@ -64,7 +64,7 @@ function formatJSON() {
     var formatted = JSON.stringify(obj, null, 2);
     output.innerHTML = syntaxHighlight(formatted);
   } catch (e) {
-    errorDiv.textContent = "鉂?JSON 瑙ｆ瀽閿欒锛? + e.message;
+    errorDiv.textContent = "❌ JSON 解析错误：" + e.message;
   }
 }
 
@@ -75,7 +75,7 @@ function compressJSON() {
     var obj = JSON.parse(input.value);
     output.textContent = JSON.stringify(obj);
   } catch (e) {
-    errorDiv.textContent = "鉂?JSON 瑙ｆ瀽閿欒锛? + e.message;
+    errorDiv.textContent = "❌ JSON 解析错误：" + e.message;
   }
 }
 
@@ -84,10 +84,10 @@ function validateJSON() {
   output.innerHTML = "";
   try {
     JSON.parse(input.value);
-    errorDiv.textContent = "鉁?JSON 鏍煎紡姝ｇ‘锛?;
+    errorDiv.textContent = "✅ JSON 格式正确！";
     errorDiv.style.color = "var(--success)";
   } catch (e) {
-    errorDiv.textContent = "鉂?JSON 瑙ｆ瀽閿欒锛? + e.message;
+    errorDiv.textContent = "❌ JSON 解析错误：" + e.message;
     errorDiv.style.color = "var(--danger)";
   }
 }
@@ -99,17 +99,17 @@ function copyResult() {
   if (!text) return;
   navigator.clipboard.writeText(text).then(function() {
     var btn = event.target;
-    btn.textContent = "鉁?宸插鍒?;
+    btn.textContent = "✅ 已复制";
     btn.classList.add("copied");
-    setTimeout(function() { btn.textContent = "馃搵 澶嶅埗"; btn.classList.remove("copied"); }, 2000);
+    setTimeout(function() { btn.textContent = "📋 复制"; btn.classList.remove("copied"); }, 2000);
   });
 }
 </script>
 
-<!-- 璁块棶缁熻 -->
+<!-- 访问统计 -->
 <div style="margin-top:16px;font-size:.85rem;color:var(--text-secondary)">
-  <span>馃憖 鏈珯鎬昏闂?<span id="busuanzi_value_site_pv"></span> 娆?路 
-  <span id="busuanzi_value_site_uv"></span> 浜?/span>
+  <span>👀 本站总访问 <span id="busuanzi_value_site_pv"></span> 次 · 
+  <span id="busuanzi_value_site_uv"></span> 人</span>
 </div>
 <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
 </body>
