@@ -1,15 +1,15 @@
-<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>瀛楁暟缁熻 - 鍦ㄧ嚎宸ュ叿绠?/title><meta name="description" content="鍦ㄧ嚎瀛楁暟缁熻宸ュ叿锛岀粺璁″瓧绗︽暟銆佸崟璇嶆暟銆佽鏁般€佹钀芥暟銆?><link rel="stylesheet" href="../css/style.css"></head><body>
-<div class="tool-page"><a href="../index.html" class="back-link">鈫?杩斿洖宸ュ叿绠?/a><div class="tool-header"><h1>瀛楁暟缁熻</h1><p class="desc">缁熻鏂囨湰鐨勫瓧绗︽暟銆佸崟璇嶆暟銆佽鏁般€佹钀芥暟绛?/p></div>
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>字数统计 - 在线工具箱</title><meta name="description" content="在线字数统计工具，统计字符数、单词数、行数、段落数。"><link rel="stylesheet" href="../css/style.css"></head><body>
+<div class="tool-page"><a href="../index.html" class="back-link">← 返回工具箱</a><div class="tool-header"><h1>字数统计</h1><p class="desc">统计文本的字符数、单词数、行数、段落数等</p></div>
 <div class="tool-body">
-<div class="form-group"><label>杈撳叆鏂囨湰</label><textarea id="input" oninput="count()" placeholder="鍦ㄦ杈撳叆鎴栫矘璐存枃鏈?.."></textarea></div>
+<div class="form-group"><label>输入文本</label><textarea id="input" oninput="count()" placeholder="在此输入或粘贴文本..."></textarea></div>
 <div class="stats-grid">
-<div class="stat-card"><div class="num" id="chars">0</div><div class="lbl">鎬诲瓧绗︽暟</div></div>
-<div class="stat-card"><div class="num" id="charsNoSpace">0</div><div class="lbl">瀛楃鏁?鏃犵┖鏍?</div></div>
-<div class="stat-card"><div class="num" id="words">0</div><div class="lbl">鍗曡瘝鏁?/div></div>
-<div class="stat-card"><div class="num" id="cnChars">0</div><div class="lbl">涓枃瀛楁暟</div></div>
-<div class="stat-card"><div class="num" id="lines">0</div><div class="lbl">琛屾暟</div></div>
-<div class="stat-card"><div class="num" id="paras">0</div><div class="lbl">娈佃惤鏁?/div></div>
-</div></div><div class="ad-slot">馃摙 骞垮憡浣?/div></div>
+<div class="stat-card"><div class="num" id="chars">0</div><div class="lbl">总字符数</div></div>
+<div class="stat-card"><div class="num" id="charsNoSpace">0</div><div class="lbl">字符数(无空格)</div></div>
+<div class="stat-card"><div class="num" id="words">0</div><div class="lbl">单词数</div></div>
+<div class="stat-card"><div class="num" id="cnChars">0</div><div class="lbl">中文字数</div></div>
+<div class="stat-card"><div class="num" id="lines">0</div><div class="lbl">行数</div></div>
+<div class="stat-card"><div class="num" id="paras">0</div><div class="lbl">段落数</div></div>
+</div></div><div class="ad-slot">📢 广告位</div></div>
 <script>
 function count(){var t=document.getElementById("input").value;
 document.getElementById("chars").textContent=t.length;
@@ -20,10 +20,10 @@ document.getElementById("lines").textContent=(t?(t.split("\n").length):0);
 document.getElementById("paras").textContent=(t.trim()?(t.trim().split(/\n\s*\n/).length):0);
 }
 </script>
-<!-- 璁块棶缁熻 -->
+<!-- 访问统计 -->
 <div style="margin-top:16px;font-size:.85rem;color:var(--text-secondary)">
-  <span>馃憖 鏈珯鎬昏闂?<span id="busuanzi_value_site_pv"></span> 娆?路 
-  <span id="busuanzi_value_site_uv"></span> 浜?/span>
+  <span>👀 本站总访问 <span id="busuanzi_value_site_pv"></span> 次 · 
+  <span id="busuanzi_value_site_uv"></span> 人</span>
 </div>
 <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
 </body></html>
