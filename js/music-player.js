@@ -64,6 +64,24 @@
   function startMusic() {
     if (!audioCtx) {
       audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    }
+    // Re-create audio graph if needed
+    if (!masterGain || !filterNode) {
+      masterGain = audioCtx.createGain();
+      masterGain.gain.value = 0.15;
+      filterNode = audioCtx.createBiquadFilter();
+      filterNode.type = 'lowpass';
+      filterNode.frequency.value = 600;
+      filterNode.Q.value = 0.5;
+      filterNode.connect(masterGain);
+      masterGain.connect(audioCtx.destination);
+    }
+    // Restore gain in case it was ramped to 0
+    masterGain.gain.cancelScheduledValues(audioCtx.currentTime);
+    masterGain.gain.setValueAtTime(masterGain.gain.value, audioCtx.currentTime);
+    masterGain.gain.linearRampToValueAtTime(0.15, audioCtx.currentTime + 0.3);
+    if (!audioCtx) {
+      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
       masterGain = audioCtx.createGain();
       masterGain.gain.value = 0.15;
       filterNode = audioCtx.createBiquadFilter();
