@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>俄罗斯方块 - 在线工具箱</title>
+<link rel="stylesheet" href="../css/style.css">
+<style>
+.tetris-wrap{display:flex;justify-content:center;gap:24px;flex-wrap:wrap;align-items:flex-start}
+.tetris-side{display:flex;flex-direction:column;gap:16px;min-width:120px}
+.tetris-canvas{border-radius:10px;box-shadow:0 0 30px rgba(99,102,241,.15);background:#111}
+.next-piece{border-radius:10px;background:#111;padding:8px}
+.tetris-controls{display:flex;flex-direction:column;gap:6px}
+.tetris-controls button{padding:10px;font-size:1.2rem;border:none;border-radius:8px;cursor:pointer;background:#1e293b;color:#fff;transition:all .15s}
+.tetris-controls button:hover{background:#334155}
+.tetris-controls button:active{transform:scale(.95)}
+@media(max-width:600px){.tetris-wrap{flex-direction:column;align-items:center}}
+</style>
+</head>
+<body>
+<div class="tool-page">
+  <a href="../index.html" class="back-link">← 返回工具箱</a>
+  <div class="tool-header"><h1>🧱 俄罗斯方块</h1><p class="desc">经典消除游戏 · 方向键移动 · 上键旋转 · 空格硬降</p></div>
+  <div class="tool-body">
+    <div class="tetris-wrap">
+      <canvas class="tetris-canvas" id="board" width="300" height="600"></canvas>
+      <div class="tetris-side">
+        <div class="score-box"><div class="score-val" id="score">0</div><div class="score-lbl">得分</div></div>
+        <div class="score-box"><div class="score-val" id="lines">0</div><div class="score-lbl">消除行</div></div>
+        <div class="score-box"><div class="score-val" id="level">1</div><div class="score-lbl">等级</div></div>
+        <canvas class="next-piece" id="nextCanvas" width="120" height="100"></canvas>
+        <div class="btn-group"><button class="btn btn-primary" id="btnStart">▶ 开始</button><button class="btn btn-secondary" id="btnPause">⏸ 暂停</button></div>
+        <div class="tetris-controls">
+          <div style="display:flex;gap:6px">
+            <button onclick="keyAction('ArrowLeft')" style="flex:1">←</button>
+            <button onclick="keyAction('ArrowDown')" style="flex:1">↓</button>
+            <button onclick="keyAction('ArrowRight')" style="flex:1">→</button>
+          </div>
+          <div style="display:flex;gap:6px">
+            <button onclick="keyAction('ArrowUp')" style="flex:1">↻ 旋转</button>
+            <button onclick="keyAction(' ')" style="flex:1">⏬ 硬降</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="ad-slot">📢 广告位</div>
+</div>
+<div style="margin-top:16px;font-size:.85rem;color:var(--text-secondary);text-align:center">
+  <span>👀 本站总访问 <span id="busuanzi_value_site_pv"></span> 次 · <span id="busuanzi_value_site_uv"></span> 人</span>
+</div>
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<script>
+(function(){
+var board=document.getElementById("board"),ctx=board.getContext("2d"),nc=document.getElementById("nextCanvas"),nctx=nc.getContext("2d");
+var COLS=10,ROWS=20,CELL=30,grid=[],piece,nextPiece,score=0,lines=0,level=1,loopId=null,running=false,paused=false;
+var colors=["#00f0f0","#f0f000","#a000f0","#00f000","#f00000","#0000f0","#f0a000"];
+var SHAPES=[
+  [[1,1,1,1]],[[1,1],[1,1]],[[0,1,0],[1,1,1]],[[1,0,0],[1,1,1]],[[0,0,1],[1,1,1]],[[1,1,0],[0,1,1]],[[0,1,1],[1,1,0]]
+];
+function createPiece(s){return{shape:JSON.parse(JSON.stringify(s)),x:Math.floor((COLS-s[0].length)/2),y:0,color:colors[Math.floor(Math.random()*colors.length)]}}
+function randomPiece(){return createPiece(SHAPES[Math.floor(Math.random()*SHAPES.length)])}
+function initGrid(){grid=[];for(var r=0;r<ROWS;r++){grid[r]=Array(COLS).fill(0)}}
+function draw(){
+  ctx.fillStyle="#111";ctx.fillRect(0,0,board.width,board.height);
+  // Grid
+  ctx.strokeStyle="rgba(255,255,255,.04)";ctx.lineWidth=.5;
+  for(var r=0;r<ROWS;r++){ctx.beginPath();ctx.moveTo(0,r*CELL);ctx.lineTo(COLS*CELL,r*CELL);ctx.stroke()}
+  for(var c=0;c<COLS;c++){ctx.beginPath();ctx.moveTo(c*CELL,0);ctx.lineTo(c*CELL,ROWS*CELL);ctx.stroke()}
+  // Placed blocks
+  for(var r=0;r<ROWS;r++)for(var c=0;c<COLS;c++){
+    if(grid[r][c]){ctx.fillStyle=grid[r][c];ctx.fillRect(c*CELL+1,r*CELL+1,CELL-2,CELL-2);
+      ctx.fillStyle="rgba(255,255,255,.2)";ctx.fillRect(c*CELL+1,r*CELL+1,CELL-2,6);ctx.fillRect(c*CELL+1,r*CELL+1,6,CELL-2)}
+  }
+  // Current piece
+  if(piece&&!paused){
+    ctx.fillStyle=piece.color;
+    for(var r=0;r<piece.shape.length;r++)for(var c=0;c<piece.shape[r].length;c++){
+      if(piece.shape[r][c]){var px=(piece.x+c)*CELL,py=(piece.y+r)*CELL;
+        ctx.fillRect(px+1,py+1,CELL-2,CELL-2);ctx.fillStyle="rgba(255,255,255,.2)";
+        ctx.fillRect(px+1,py+1,CELL-2,6);ctx.fillRect(px+1,py+1,6,CELL-2);ctx.fillStyle=piece.color}
+    }
+  }
+  // Next piece
+  nctx.fillStyle="#111";nctx.fillRect(0,0,nc.width,nc.height);
+  if(nextPiece){
+    var s=nextPiece.shape;var ox=(nc.width-s[0].length*20)/2,oy=(nc.height-s.length*20)/2;
+    nctx.fillStyle=nextPiece.color;
+    for(var r=0;r<s.length;r++)for(var c=0;c<s[r].length;c++)if(s[r][c]){nctx.fillRect(ox+c*20+1,oy+r*20+1,18,18)}
+  }
+}
+function collide(p){for(var r=0;r<p.shape.length;r++)for(var c=0;c<p.shape[r].length;c++){if(p.shape[r][c]){var nr=p.y+r,nc=p.x+c;if(nc<0||nc>=COLS||nr>=ROWS||(nr>=0&&grid[nr][nc]))return true}}return false}
+function merge(){for(var r=0;r<piece.shape.length;r++)for(var c=0;c<piece.shape[r].length;c++){if(piece.shape[r][c]){var nr=piece.y+r;if(nr<0){gameOver();return}grid[nr][piece.x+c]=piece.color}}}
+function clearLines(){
+  var cleared=0;
+  for(var r=ROWS-1;r>=0;r--){if(grid[r].every(function(v){return v!==0})){grid.splice(r,1);grid.unshift(Array(COLS).fill(0));cleared++;r++}}
+  if(cleared){var pts=[0,100,300,500,800];score+=pts[cleared]*level;lines+=cleared;level=Math.floor(lines/10)+1;
+    document.getElementById("score").textContent=score;document.getElementById("lines").textContent=lines;document.getElementById("level").textContent=level}
+}
+function drop(){piece.y++;if(collide(piece)){piece.y--;merge();clearLines();piece=nextPiece;nextPiece=randomPiece();if(collide(piece))gameOver()}}
+function rotate(){var s=piece.shape;var n=Array(s[0].length);for(var i=0;i<s[0].length;i++){n[i]=Array(s.length);for(var j=0;j<s.length;j++)n[i][j]=s[s.length-1-j][i]}var backup=piece.shape;piece.shape=n;if(collide(piece))piece.shape=backup}
+function moveLeft(){piece.x--;if(collide(piece))piece.x++}
+function moveRight(){piece.x++;if(collide(piece))piece.x--}
+function hardDrop(){while(!collide(piece))piece.y++;piece.y--;merge();clearLines();piece=nextPiece;nextPiece=randomPiece();if(collide(piece))gameOver();draw()}
+function gameOver(){running=false;clearInterval(loopId);
+  ctx.fillStyle="rgba(0,0,0,.7)";ctx.fillRect(0,0,board.width,board.height);
+  ctx.fillStyle="#ff6b6b";ctx.font="bold 28px sans-serif";ctx.textAlign="center";ctx.fillText("游戏结束",board.width/2,board.height/2-10);
+  ctx.fillStyle="#fff";ctx.font="16px sans-serif";ctx.fillText("得分: "+score,board.width/2,board.height/2+30);
+  document.getElementById("btnStart").textContent="🔄 再来一局";
+}
+function tick(){if(!running||paused)return;drop();draw()}
+function startGame(){initGrid();score=0;lines=0;level=1;document.getElementById("score").textContent="0";document.getElementById("lines").textContent="0";document.getElementById("level").textContent="1";piece=randomPiece();nextPiece=randomPiece();running=true;paused=false;document.getElementById("btnStart").textContent="🔄 重新开始";document.getElementById("btnPause").textContent="⏸ 暂停";clearInterval(loopId);loopId=setInterval(tick,Math.max(100,800-(level-1)*70));draw()}
+function togglePause(){if(!running)return;paused=!paused;document.getElementById("btnPause").textContent=paused?"▶ 继续":"⏸ 暂停";if(!paused){clearInterval(loopId);loopId=setInterval(tick,Math.max(100,800-(level-1)*70))}}
+function keyAction(k){
+  if(!running||paused)return;
+  if(k==="ArrowUp")rotate();else if(k==="ArrowDown")drop();else if(k==="ArrowLeft")moveLeft();else if(k==="ArrowRight")moveRight();else if(k===" ")hardDrop();
+  draw();
+}
+document.addEventListener("keydown",function(e){
+  if(e.code==="ArrowUp"||e.code==="ArrowDown"||e.code==="ArrowLeft"||e.code==="ArrowRight"||e.code==="Space"){e.preventDefault();keyAction(e.code==="Space"?" ":e.code)}
+});
+document.getElementById("btnStart").addEventListener("click",startGame);
+document.getElementById("btnPause").addEventListener("click",togglePause);
+window.keyAction=keyAction;
+initGrid();draw();
+})();
+</script>
+</body>
+</html>
