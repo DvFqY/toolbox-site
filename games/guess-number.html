@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>猜数字 - 在线工具箱</title>
+<link rel="stylesheet" href="../css/style.css">
+<style>
+.guess-wrap{display:flex;flex-direction:column;align-items:center;gap:16px}
+.guess-input{width:200px!important;text-align:center;font-size:1.5rem!important;letter-spacing:8px;font-family:"SF Mono","Consolas",monospace!important}
+.guess-history{max-height:200px;overflow-y:auto;width:100%;max-width:400px}
+.guess-row{display:flex;align-items:center;gap:10px;padding:8px 12px;background:var(--bg);border-radius:6px;margin-bottom:4px;font-family:"SF Mono","Consolas",monospace}
+.guess-num{font-size:1.2rem;font-weight:700;letter-spacing:4px;flex:1}
+.guess-hint{font-size:.9rem;min-width:80px;text-align:right}
+.hint-a{color:#10b981;font-weight:700}.hint-b{color:#f59e0b;font-weight:700}
+.range-select{display:flex;gap:8px;margin-bottom:8px}
+</style>
+</head>
+<body>
+<div class="tool-page">
+  <a href="../index.html" class="back-link">← 返回工具箱</a>
+  <div class="tool-header"><h1>🎯 猜数字</h1><p class="desc">逻辑推理游戏 · 猜出4位不重复的数字 · A表示数字和位置都对 · B表示数字对位置错</p></div>
+  <div class="tool-body">
+    <div class="guess-wrap">
+      <div class="game-ui"><div class="score-box"><div class="score-val" id="attempts">0</div><div class="score-lbl">已猜次数</div></div></div>
+      <div class="guess-history" id="history"></div>
+      <input type="text" class="guess-input" id="guessInput" maxlength="4" placeholder="输入4位数字" autocomplete="off">
+      <div class="btn-group"><button class="btn btn-primary" onclick="submitGuess()">🎯 猜!</button><button class="btn btn-secondary" onclick="newGame()">🔄 新游戏</button></div>
+      <p class="hint">输入4个不重复的数字(0-9)，根据"A几B几"反馈推理正确答案</p>
+    </div>
+  </div>
+  <div class="ad-slot">📢 广告位</div>
+</div>
+<div style="margin-top:16px;font-size:.85rem;color:var(--text-secondary);text-align:center">
+  <span>👀 本站总访问 <span id="busuanzi_value_site_pv"></span> 次 · <span id="busuanzi_value_site_uv"></span> 人</span>
+</div>
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<script>
+var answer=[],attempts=0;
+function generateAnswer(){
+  var digits=[0,1,2,3,4,5,6,7,8,9];
+  answer=[];
+  for(var i=0;i<4;i++){var idx=Math.floor(Math.random()*digits.length);answer.push(digits[idx]);digits.splice(idx,1)}
+}
+function newGame(){generateAnswer();attempts=0;document.getElementById("attempts").textContent="0";document.getElementById("history").innerHTML="";document.getElementById("guessInput").value="";document.getElementById("guessInput").focus()}
+function submitGuess(){
+  var v=document.getElementById("guessInput").value.trim();
+  if(!/^\d{4}$/.test(v)){alert("请输入4位数字");return}
+  var guess=v.split("").map(Number);
+  if(new Set(guess).size!==4){alert("数字不能重复");return}
+  attempts++;document.getElementById("attempts").textContent=attempts;
+  var a=0,b=0;
+  for(var i=0;i<4;i++){if(guess[i]===answer[i])a++;else if(answer.includes(guess[i]))b++}
+  var row=document.createElement("div");row.className="guess-row";
+  row.innerHTML='<span class="guess-num">'+v+'</span><span class="guess-hint"><span class="hint-a">'+a+'A</span> <span class="hint-b">'+b+'B</span></span>';
+  document.getElementById("history").prepend(row);
+  document.getElementById("guessInput").value="";
+  if(a===4){
+    setTimeout(function(){
+      var ov=document.createElement("div");ov.className="overlay";ov.innerHTML='<div class="overlay-msg"><h2>🎉 恭喜你猜对了!</h2><p>答案是 <b>'+answer.join("")+'</b><br>共猜了 <b>'+attempts+'</b> 次</p><button class="btn btn-primary" style="margin-top:12px" onclick="this.closest(\`.overlay\`).remove();newGame()">再来一局</button></div>';
+      document.body.appendChild(ov);
+    },200);
+  }
+  document.getElementById("guessInput").focus();
+}
+document.getElementById("guessInput").addEventListener("keydown",function(e){if(e.code==="Enter")submitGuess()});
+newGame();
+</script>
+</body>
+</html>
