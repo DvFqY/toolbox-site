@@ -5,7 +5,7 @@
 
   var container = document.createElement('div');
   container.id = 'webPet';
-  container.style.cssText = 'position:fixed;bottom:80px;left:20px;z-index:9998;cursor:grab;user-select:none;touch-action:none';
+  container.style.cssText = 'position:fixed;bottom:80px;left:20px;top:auto;z-index:9998;cursor:grab;user-select:none;touch-action:none';
 
   var canvas = document.createElement('canvas');
   canvas.width = 140; canvas.height = 140;
@@ -132,24 +132,30 @@
   function jumpAnim(){canvas.style.transform='translateY(-12px) scale(1.08)';setTimeout(function(){canvas.style.transform=''},200)}
 
   // ===== DRAG (fixed) =====
-  var dragging=false,startX=0,startY=0,petX=20,petY=0;
-  function updatePos(){container.style.left=petX+'px';container.style.bottom=(80-petY)+'px'}
+  var dragging=false,startX=0,startY=0,petX=20,petTop=0;
+  function updatePos(){
+    container.style.left=petX+'px';
+    container.style.top=petTop+'px';
+    container.style.bottom='auto';
+  }
+  // Get initial top position
+  petTop=window.innerHeight-80-85;
   updatePos();
 
   container.addEventListener('pointerdown',function(e){
     dragging=true;container.style.cursor='grabbing';container.setPointerCapture(e.pointerId);
     var rect=container.getBoundingClientRect();
     startX=e.clientX-rect.left;
-    startY=(window.innerHeight-e.clientY)-parseFloat(container.style.bottom||'80');
+    startY=e.clientY-rect.top;
     e.preventDefault();e.stopPropagation();
   });
 
   container.addEventListener('pointermove',function(e){
     if(!dragging)return;
     petX=e.clientX-startX;
-    petY=(window.innerHeight-e.clientY)-startY-80;
+    petTop=e.clientY-startY;
     petX=Math.max(-30,Math.min(window.innerWidth-60,petX));
-    petY=Math.max(-window.innerHeight+120,Math.min(250,petY));
+    petTop=Math.max(60,Math.min(window.innerHeight-100,petTop));
     updatePos();
     e.preventDefault();
   });
@@ -158,9 +164,9 @@
     if(!dragging)return;
     dragging=false;container.style.cursor='grab';container.releasePointerCapture(e.pointerId);
     // Return to bottom if too high
-    if(petY>60){var startY2=petY;var animStart=performance.now();
-      function bounceBack(ts){var p=(ts-animStart)/400;if(p>=1){petY=0;updatePos();return}
-        petY=startY2*(1-p);updatePos();requestAnimationFrame(bounceBack)}
+    if(petTop<window.innerHeight-180){var startTop=petTop;var targetTop=window.innerHeight-165;var animStart=performance.now();
+      function bounceBack(ts){var p=(ts-animStart)/400;if(p>=1){petTop=targetTop;updatePos();return}
+        petTop=startTop+(targetTop-startTop)*p;updatePos();requestAnimationFrame(bounceBack)}
       requestAnimationFrame(bounceBack)
     }
   });
@@ -168,7 +174,7 @@
   // Click (only if not dragged)
   var moved=false;
   container.addEventListener('pointerdown',function(){moved=false});
-  container.addEventListener('pointermove',function(){if(dragging&&(Math.abs(petX-20)>5||Math.abs(petY)>5))moved=true});
+  container.addEventListener('pointermove',function(){if(dragging&&(Math.abs(petX-20)>5||Math.abs(petTop-(window.innerHeight-165))>5))moved=true});
   container.addEventListener('pointerup',function(e){
     if(moved)return;
     clickCount++;jumpAnim();
