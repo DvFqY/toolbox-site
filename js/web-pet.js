@@ -25,6 +25,9 @@
   function say(t){bubble.textContent=t;bubble.style.opacity='1';clearTimeout(bubble._t);bubble._t=setTimeout(function(){bubble.style.opacity='0'},2200)}
 
   function drawCat(blink){
+    var pc=(window.__petData&&window.__petData.color)||pc;
+    var pc2=pc2;if(pc==='#8b5cf6')pc2='#7c3aed';
+    var acc=(window.__petData&&window.__petData.accessory)||'';
     ctx.clearRect(0,0,140,140);
     var c=ctx;
 
@@ -33,19 +36,19 @@
 
     // === TAIL (behind) ===
     c.save();c.translate(40,105);c.rotate(.3+Math.sin(frame*.06)*.3);
-    c.fillStyle='#f59e0b';c.beginPath();c.moveTo(0,0);c.quadraticCurveTo(-20,-10,-30,-25);c.quadraticCurveTo(-25,-30,-15,-20);c.quadraticCurveTo(-5,-5,0,0);c.fill();
-    c.fillStyle='#fbbf24';c.beginPath();c.moveTo(-2,0);c.quadraticCurveTo(-18,-5,-28,-18);c.quadraticCurveTo(-24,-22,-15,-16);c.quadraticCurveTo(-5,-3,-2,0);c.fill();
+    c.fillStyle=pc2;c.beginPath();c.moveTo(0,0);c.quadraticCurveTo(-20,-10,-30,-25);c.quadraticCurveTo(-25,-30,-15,-20);c.quadraticCurveTo(-5,-5,0,0);c.fill();
+    c.fillStyle=pc;c.beginPath();c.moveTo(-2,0);c.quadraticCurveTo(-18,-5,-28,-18);c.quadraticCurveTo(-24,-22,-15,-16);c.quadraticCurveTo(-5,-3,-2,0);c.fill();
     c.restore();
 
     // === BODY ===
     var bodyGrad=c.createLinearGradient(50,80,50,125);
-    bodyGrad.addColorStop(0,'#fbbf24');bodyGrad.addColorStop(1,'#f59e0b');
+    bodyGrad.addColorStop(0,pc);bodyGrad.addColorStop(1,pc2);
     c.fillStyle=bodyGrad;c.beginPath();c.ellipse(70,108,30,24,0,0,Math.PI*2);c.fill();
     // Belly
     c.fillStyle='#fef3c7';c.beginPath();c.ellipse(70,112,20,15,0,0,Math.PI*2);c.fill();
 
     // === BACK PAWS ===
-    c.fillStyle='#fbbf24';c.beginPath();c.ellipse(48,125,14,8,0,0,Math.PI*2);c.fill();
+    c.fillStyle=pc;c.beginPath();c.ellipse(48,125,14,8,0,0,Math.PI*2);c.fill();
     c.beginPath();c.ellipse(92,125,14,8,0,0,Math.PI*2);c.fill();
     c.fillStyle='#fef3c7';c.beginPath();c.ellipse(48,125,7,4,0,0,Math.PI*2);c.fill();
     c.beginPath();c.ellipse(92,125,7,4,0,0,Math.PI*2);c.fill();
@@ -58,18 +61,18 @@
     c.beginPath();c.arc(97,125,2.5,0,Math.PI*2);c.fill();
 
     // === FRONT PAWS ===
-    c.fillStyle='#fbbf24';c.beginPath();c.ellipse(55,118,10,7,.2,0,Math.PI*2);c.fill();
+    c.fillStyle=pc;c.beginPath();c.ellipse(55,118,10,7,.2,0,Math.PI*2);c.fill();
     c.beginPath();c.ellipse(85,118,10,7,-.2,0,Math.PI*2);c.fill();
     c.fillStyle='#fef3c7';c.beginPath();c.ellipse(55,118,5,3.5,.2,0,Math.PI*2);c.fill();
     c.beginPath();c.ellipse(85,118,5,3.5,-.2,0,Math.PI*2);c.fill();
 
     // === HEAD ===
-    var headGrad=c.createRadialGradient(65,60,5,70,65,40);
-    headGrad.addColorStop(0,'#fef3c7');headGrad.addColorStop(.3,'#fde68a');headGrad.addColorStop(1,'#fbbf24');
+    var petColor=(window.__petData&&window.__petData.color)||pc;var headGrad=c.createRadialGradient(65,60,5,70,65,40);
+    headGrad.addColorStop(0,'#fef3c7');headGrad.addColorStop(.3,'#fde68a');headGrad.addColorStop(1,pc);
     c.fillStyle=headGrad;c.beginPath();c.ellipse(70,65,32,30,0,0,Math.PI*2);c.fill();
 
     // === EARS ===
-    c.fillStyle='#fbbf24';c.beginPath();c.moveTo(42,55);c.lineTo(28,20);c.lineTo(55,42);c.fill();
+    c.fillStyle=pc;c.beginPath();c.moveTo(42,55);c.lineTo(28,20);c.lineTo(55,42);c.fill();
     c.beginPath();c.moveTo(98,55);c.lineTo(112,20);c.lineTo(85,42);c.fill();
     c.fillStyle='#fca5a5';c.beginPath();c.moveTo(46,52);c.lineTo(36,28);c.lineTo(54,45);c.fill();
     c.beginPath();c.moveTo(94,52);c.lineTo(104,28);c.lineTo(86,45);c.fill();
@@ -123,10 +126,12 @@
     c.beginPath();c.ellipse(92,74,7,4,0,0,Math.PI*2);c.fill();
 
     // === FOREHEAD STRIPES ===
-    c.strokeStyle='#f59e0b';c.lineWidth=1.5;c.lineCap='round';
+    c.strokeStyle=pc2;c.lineWidth=1.5;c.lineCap='round';
     c.beginPath();c.moveTo(64,45);c.lineTo(66,40);c.stroke();
     c.beginPath();c.moveTo(70,43);c.lineTo(70,37);c.stroke();
     c.beginPath();c.moveTo(76,45);c.lineTo(74,40);c.stroke();
+    // Accessory
+    if(acc){c.font='22px sans-serif';c.textAlign='center';c.fillText(acc,70,18)}
   }
 
   function jumpAnim(){canvas.style.transform='translateY(-12px) scale(1.08)';setTimeout(function(){canvas.style.transform=''},200)}
