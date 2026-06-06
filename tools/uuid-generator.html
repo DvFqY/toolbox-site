@@ -1,20 +1,20 @@
-<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>UUID 鐢熸垚鍣?- 鍦ㄧ嚎宸ュ叿绠?/title><meta name="description" content="鍦ㄧ嚎鎵归噺鐢熸垚 UUID v4锛屾敮鎸佷竴閿鍒躲€?><link rel="stylesheet" href="../css/style.css"></head><body>
-<div class="tool-page"><a href="../index.html" class="back-link">鈫?杩斿洖宸ュ叿绠?/a><div class="tool-header"><h1>UUID 鐢熸垚鍣?/h1><p class="desc">鎵归噺鐢熸垚 UUID v4 鍞竴鏍囪瘑绗?/p></div>
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>UUID 生成器 - 在线工具箱</title><meta name="description" content="在线批量生成 UUID v4，支持一键复制。"><link rel="stylesheet" href="../css/style.css"></head><body>
+<div class="tool-page"><a href="../index.html" class="back-link">← 返回工具箱</a><div class="tool-header"><h1>UUID 生成器</h1><p class="desc">批量生成 UUID v4 唯一标识符</p></div>
 <div class="tool-body">
-<div class="form-group"><label>鐢熸垚鏁伴噺</label><input type="number" id="count" value="5" min="1" max="100" style="max-width:200px"></div>
-<div style="margin-bottom:16px"><label style="display:flex;align-items:center;gap:6px;cursor:pointer"><input type="checkbox" id="upperCase"> 澶у啓</label></div>
-<div class="btn-group"><button class="btn btn-primary" onclick="generate()">馃幉 鐢熸垚 UUID</button><button class="btn btn-secondary" onclick="copyAll()">馃搵 鍏ㄩ儴澶嶅埗</button></div>
-<div class="result-area" id="output" style="margin-top:16px"></div></div><div class="ad-slot">馃摙 骞垮憡浣?/div></div>
+<div class="form-group"><label>生成数量</label><input type="number" id="count" value="5" min="1" max="100" style="max-width:200px"></div>
+<div style="margin-bottom:16px"><label style="display:flex;align-items:center;gap:6px;cursor:pointer"><input type="checkbox" id="upperCase"> 大写</label></div>
+<div class="btn-group"><button class="btn btn-primary" onclick="generate()">🎲 生成 UUID</button><button class="btn btn-secondary" onclick="copyAll()">📋 全部复制</button></div>
+<div class="result-area" id="output" style="margin-top:16px"></div></div><div class="ad-slot">📢 广告位</div></div>
 <script>
 var out=document.getElementById("output");
 function generateUUID(){return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g,function(c){var r=Math.random()*16|0,v=c==="x"?r:(r&0x3|0x8);return v.toString(16)})}
 function generate(){var n=parseInt(document.getElementById("count").value)||5,upper=document.getElementById("upperCase").checked,uuids=[];for(var i=0;i<n;i++){var u=generateUUID();uuids.push(upper?u.toUpperCase():u)}out.textContent=uuids.join("\n")}
-function copyAll(){var t=out.textContent;if(!t)return;navigator.clipboard.writeText(t).then(function(){var b=event.target;b.textContent="鉁?宸插鍒?;setTimeout(function(){b.textContent="馃搵 鍏ㄩ儴澶嶅埗"},2000)})}
+function copyAll(){var t=out.textContent;if(!t)return;navigator.clipboard.writeText(t).then(function(){var b=event.target;b.textContent="✅ 已复制";setTimeout(function(){b.textContent="📋 全部复制"},2000)})}
 </script>
-<!-- 璁块棶缁熻 -->
+<!-- 访问统计 -->
 <div style="margin-top:16px;font-size:.85rem;color:var(--text-secondary)">
-  <span>馃憖 鏈珯鎬昏闂?<span id="busuanzi_value_site_pv"></span> 娆?路 
-  <span id="busuanzi_value_site_uv"></span> 浜?/span>
+  <span>👀 本站总访问 <span id="busuanzi_value_site_pv"></span> 次 · 
+  <span id="busuanzi_value_site_uv"></span> 人</span>
 </div>
 <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
 </body></html>
