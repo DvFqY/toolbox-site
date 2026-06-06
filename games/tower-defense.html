@@ -83,11 +83,11 @@ var TOWERS=[
 ];
 
 var ENEMIES=[
-  {id:"rat",name:"老鼠",hp:60,spd:1.0,reward:12,color:"#94a3b8",size:7,shape:"circle",unlockLvl:0},
-  {id:"wolf",name:"野狼",hp:140,spd:1.5,reward:22,color:"#78716c",size:9,shape:"diamond",unlockLvl:1},
-  {id:"boar",name:"野猪",hp:320,spd:.65,reward:40,color:"#78350f",size:12,shape:"hex",unlockLvl:1},
-  {id:"mage",name:"法师",hp:200,spd:1.0,reward:35,color:"#7c3aed",size:10,shape:"star",unlockLvl:2,heal:3},
-  {id:"dragon",name:"幼龙",hp:600,spd:.55,reward:120,color:"#dc2626",size:15,shape:"pentagon",unlockLvl:3,fire:1}
+  {id:"rat",name:"老鼠",hp:60,spd:0.5,reward:12,color:"#94a3b8",size:7,shape:"circle",unlockLvl:0},
+  {id:"wolf",name:"野狼",hp:140,spd:0.75,reward:22,color:"#78716c",size:9,shape:"diamond",unlockLvl:1},
+  {id:"boar",name:"野猪",hp:320,spd:0.32,reward:40,color:"#78350f",size:12,shape:"hex",unlockLvl:1},
+  {id:"mage",name:"法师",hp:200,spd:0.5,reward:35,color:"#7c3aed",size:10,shape:"star",unlockLvl:2,heal:3},
+  {id:"dragon",name:"幼龙",hp:600,spd:0.28,reward:120,color:"#dc2626",size:15,shape:"pentagon",unlockLvl:3,fire:1}
 ];
 
 var LEVELS=[
@@ -237,7 +237,7 @@ function update(){
       if(!e.alive)return;
       e.anim+=0.08;
       var sp=e.spd*(e.slow>0?.35:1);
-      e.pIdx+=sp*0.04;
+      e.pIdx+=sp*0.025;
       if(e.pIdx>=G.path.length-1){e.alive=false;G.lives--;updateHUD();if(G.lives<=0)endGame(false);return}
       var i=Math.floor(e.pIdx),f=e.pIdx-i;
       var p1=G.path[i],p2=G.path[Math.min(i+1,G.path.length-1)];
