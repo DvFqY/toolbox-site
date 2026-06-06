@@ -18,18 +18,23 @@
     setTimeout(function(){ el.remove(); }, dur || 2500);
   }
 
-  // ===== 1. KONAMI CODE: ↑↑↓↓←→←→BA =====
+  // ===== 1. TRIPLE-CLICK EMPTY SPACE =====
   (function(){
-    var seq = [38,38,40,40,37,39,37,39,66,65];
-    var idx = 0;
-    document.addEventListener('keydown', function(e){
-      if (e.keyCode === seq[idx]) { idx++; if (idx === seq.length) { idx = 0; fire(); } }
-      else { idx = (e.keyCode === 38) ? 1 : 0; }
+    var clickTimes = [];
+    document.addEventListener('click', function(e){
+      if (e.target.closest('button,a,input,textarea,canvas,#webPet')) { clickTimes = []; return; }
+      var now = Date.now();
+      clickTimes.push(now);
+      clickTimes = clickTimes.filter(function(t){ return now - t < 800; });
+      if (clickTimes.length >= 3) {
+        clickTimes = [];
+        fire();
+      }
     });
     function fire(){
       for (var i=0;i<60;i++){var c=document.createElement('div');c.style.cssText='position:fixed;z-index:99999;pointer-events:none;width:'+(5+Math.random()*8)+'px;height:'+(4+Math.random()*8)+'px;background:hsl('+Math.random()*360+',80%,60%);border-radius:2px;left:'+Math.random()*window.innerWidth+'px;top:-20px;animation:efxFall '+(2+Math.random()*2.5)+'s linear forwards;';document.body.appendChild(c);setTimeout(function(){c.remove()},3500)}
       var f = document.createElement('div');f.style.cssText='position:fixed;inset:0;z-index:99998;pointer-events:none;animation:efxFlash .7s ease-out;background:linear-gradient(90deg,red,orange,yellow,green,blue,indigo,violet)';document.body.appendChild(f);setTimeout(function(){f.remove()},800);
-      toast('🎮 <b>科乐美密技发现!</b><br><small>↑↑↓↓←→←→BA</small>', 3000);
+      toast('🎉 <b>彩蛋触发!</b><br><small>你发现了一个隐藏惊喜</small>', 3000);
       try{var a=new AudioContext();[523,659,784,1047].forEach(function(fr,i){var o=a.createOscillator(),g=a.createGain();o.type='square';o.frequency.value=fr;g.gain.setValueAtTime(.04,a.currentTime+i*.1);g.gain.exponentialRampToValueAtTime(.001,a.currentTime+i*.1+.15);o.connect(g);g.connect(a.destination);o.start(a.currentTime+i*.1);o.stop(a.currentTime+i*.1+.2)})}catch(e){}
     }
   })();
@@ -37,18 +42,30 @@
   // ===== 2. PET EVOLUTION =====
   (function(){
     var clicks = parseInt(localStorage.getItem('pet_clicks')||'0');
-    var levels = ['🐱 小猫咪','🎀 蝴蝶结猫','😎 墨镜猫','👑 皇冠猫','🌈 彩虹猫','🚀 宇宙猫'];
+    var levels = [
+      {name:'小猫咪',acc:'',color:'#fbbf24'},
+      {name:'蝴蝶结猫',acc:'🎀',color:'#fbbf24'},
+      {name:'墨镜猫',acc:'😎',color:'#fbbf24'},
+      {name:'皇冠猫',acc:'👑',color:'#f59e0b'},
+      {name:'彩虹猫',acc:'🌈',color:'#fbbf24'},
+      {name:'宇宙猫',acc:'🚀',color:'#8b5cf6'}
+    ];
     var observer = new MutationObserver(function(){
       var pet = document.getElementById('webPet');
       if (pet && !pet.dataset.evoHooked) {
         pet.dataset.evoHooked = '1';
+        var lvl = Math.min(Math.floor(clicks/15), levels.length-1);
+        window.__petLevel = lvl;
+        window.__petData = levels[lvl];
         pet.addEventListener('click', function(ev){
           ev.stopPropagation();
           clicks++;
           localStorage.setItem('pet_clicks', clicks);
-          var lvl = Math.min(Math.floor(clicks/15), levels.length-1);
-          if (clicks % 15 === 0 && lvl > 0) {
-            toast(levels[lvl-1] + ' → <b>' + levels[lvl] + '</b>!<br><small>Lv.'+lvl+'</small>', 2800);
+          var lv = Math.min(Math.floor(clicks/15), levels.length-1);
+          window.__petLevel = lv;
+          window.__petData = levels[lv];
+          if (clicks % 15 === 0 && lv > 0) {
+            toast(levels[lv-1].name + ' → <b>' + levels[lv].name + '</b>!<br><small>Lv.'+lv+'</small>', 2800);
           }
         });
       }
