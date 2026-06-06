@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>扫雷 - 在线工具箱</title>
+<link rel="stylesheet" href="../css/style.css">
+<style>
+.mine-wrap{display:flex;flex-direction:column;align-items:center;gap:10px}
+.mine-header{display:flex;align-items:center;justify-content:space-between;width:100%;max-width:400px;background:#e8e8e8;padding:8px 16px;border-radius:10px;border:2px solid #ccc}
+.mine-counter{font-family:"SF Mono","Consolas",monospace;font-size:1.4rem;font-weight:700;color:#c92a2a;background:#1a1a1a;padding:4px 12px;border-radius:6px;min-width:60px;text-align:center}
+.mine-face{font-size:1.8rem;cursor:pointer;width:48px;height:48px;display:flex;align-items:center;justify-content:center;border-radius:50%;background:#d0d0d0;border:2px solid #bbb;transition:all .15s;user-select:none}
+.mine-face:hover{background:#c0c0c0}
+.mine-face:active{transform:scale(.9)}
+.mine-grid{display:inline-grid;gap:1px;background:#999;padding:2px;border-radius:6px;border:2px solid #777}
+.mine-cell{width:32px;height:32px;background:#c0c0c0;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.85rem;cursor:pointer;user-select:none;border:3px outset #ddd;transition:background .08s}
+.mine-cell:hover:not(.revealed):not(.flagged){background:#d4d4d4}
+.mine-cell.revealed{background:#e8e8e8;border:1px solid #bbb;cursor:default}
+.mine-cell.flagged{color:#c92a2a}
+.mine-cell.mine-explode{background:#ff6b6b!important}
+.mine-cell.n1{color:#1971c2}.mine-cell.n2{color:#2b8a3e}.mine-cell.n3{color:#c92a2a}.mine-cell.n4{color:#862e9c}.mine-cell.n5{color:#a61e4d}.mine-cell.n6{color:#0b7285}.mine-cell.n7{color:#1a1a1a}.mine-cell.n8{color:#555}
+.difficulty{display:flex;gap:8px;margin-bottom:8px}
+.diff-btn{padding:6px 14px;border-radius:20px;border:1.5px solid var(--border);background:var(--surface);cursor:pointer;font-size:.82rem;font-weight:500;transition:all .2s}
+.diff-btn:hover{border-color:var(--primary)}
+.diff-btn.active{background:var(--primary);color:white;border-color:var(--primary)}
+@media(max-width:500px){.mine-cell{width:28px;height:28px;font-size:.75rem}}
+</style>
+</head>
+<body>
+<div class="tool-page">
+  <a href="../index.html" class="back-link">← 返回工具箱</a>
+  <div class="tool-header"><h1>💣 扫雷</h1><p class="desc">经典逻辑游戏 · 左键揭开 · 右键插旗</p></div>
+  <div class="tool-body">
+    <div class="mine-wrap">
+      <div class="difficulty">
+        <button class="diff-btn active" onclick="setDifficulty(9,9,10)">😊 简单</button>
+        <button class="diff-btn" onclick="setDifficulty(16,16,40)">😐 中等</button>
+        <button class="diff-btn" onclick="setDifficulty(30,16,99)">😈 困难</button>
+      </div>
+      <div class="mine-header">
+        <div class="mine-counter" id="mineCount">10</div>
+        <div class="mine-face" id="face" onclick="newGame()">🙂</div>
+        <div class="mine-counter" id="timer">0</div>
+      </div>
+      <div class="mine-grid" id="mineGrid"></div>
+      <p class="hint">左键点击揭开 · 右键/长按插旗 🚩 · 双击已揭开格子快速揭开周围</p>
+    </div>
+  </div>
+  <div class="ad-slot">📢 广告位</div>
+</div>
+<div style="margin-top:16px;font-size:.85rem;color:var(--text-secondary);text-align:center">
+  <span>👀 本站总访问 <span id="busuanzi_value_site_pv"></span> 次 · <span id="busuanzi_value_site_uv"></span> 人</span>
+</div>
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<script>
+(function(){
+var gridEl=document.getElementById("mineGrid"),faceEl=document.getElementById("face"),mineCountEl=document.getElementById("mineCount"),timerEl=document.getElementById("timer");
+var rows=9,cols=9,totalMines=10;
+var board=[],revealed=[],flagged=[],gameOver=false,gameWon=false,timer=0,timerId=null,firstClick=true;
+
+function init(){
+  board=Array(rows);revealed=Array(rows);flagged=Array(rows);
+  for(var r=0;r<rows;r++){board[r]=Array(cols).fill(0);revealed[r]=Array(cols).fill(false);flagged[r]=Array(cols).fill(false)}
+  gameOver=false;gameWon=false;firstClick=true;timer=0;timerEl.textContent="0";faceEl.textContent="🙂";
+  clearInterval(timerId);timerId=null;
+  var diffBtns=document.querySelectorAll(".diff-btn");
+  diffBtns.forEach(function(b){b.classList.remove("active")});
+  if(totalMines===10)diffBtns[0].classList.add("active");
+  else if(totalMines===40)diffBtns[1].classList.add("active");
+  else diffBtns[2].classList.add("active");
+  mineCountEl.textContent=totalMines;
+  render();
+}
+function placeMines(excludeR,excludeC){
+  var exclude=new Set();exclude.add(excludeR+","+excludeC);
+  for(var dr=-1;dr<=1;dr++)for(var dc=-1;dc<=1;dc++){var nr=excludeR+dr,nc=excludeC+dc;if(nr>=0&&nr<rows&&nc>=0&&nc<cols)exclude.add(nr+","+nc)}
+  var placed=0;
+  while(placed<totalMines){
+    var r=Math.floor(Math.random()*rows),c=Math.floor(Math.random()*cols);
+    if(!exclude.has(r+","+c)&&board[r][c]!==-1){board[r][c]=-1;placed++}
+  }
+  for(var r=0;r<rows;r++)for(var c=0;c<cols;c++){
+    if(board[r][c]===-1)continue;
+    var count=0;
+    for(var dr=-1;dr<=1;dr++)for(var dc=-1;dc<=1;dc++){var nr=r+dr,nc=c+dc;if(nr>=0&&nr<rows&&nc>=0&&nc<cols&&board[nr][nc]===-1)count++}
+    board[r][c]=count;
+  }
+}
+function reveal(r,c){
+  if(gameOver||gameWon||revealed[r][c]||flagged[r][c])return;
+  if(firstClick){firstClick=false;placeMines(r,c);timerId=setInterval(function(){timer++;timerEl.textContent=timer},1000)}
+  revealed[r][c]=true;
+  if(board[r][c]===-1){triggerMine(r,c);return}
+  if(board[r][c]===0){
+    for(var dr=-1;dr<=1;dr++)for(var dc=-1;dc<=1;dc++){var nr=r+dr,nc=c+dc;if(nr>=0&&nr<rows&&nc>=0&&nc<cols)reveal(nr,nc)}
+  }
+  checkWin();
+}
+function triggerMine(r,c){
+  gameOver=true;clearInterval(timerId);faceEl.textContent="😵";
+  for(var rr=0;rr<rows;rr++)for(var cc=0;cc<cols;cc++){
+    if(board[rr][cc]===-1)revealed[rr][cc]=true;
+  }
+  render();
+}
+function toggleFlag(r,c){
+  if(gameOver||gameWon||revealed[r][c])return;
+  if(firstClick){firstClick=false;placeMines(r,c);timerId=setInterval(function(){timer++;timerEl.textContent=timer},1000)}
+  flagged[r][c]=!flagged[r][c];
+  var fc=0;for(var rr=0;rr<rows;rr++)for(var cc=0;cc<cols;cc++)if(flagged[rr][cc])fc++;
+  mineCountEl.textContent=totalMines-fc;
+  render();
+}
+function chord(r,c){
+  if(!revealed[r][c]||board[r][c]<=0)return;
+  var fc=0;for(var dr=-1;dr<=1;dr++)for(var dc=-1;dc<=1;dc++){var nr=r+dr,nc=c+dc;if(nr>=0&&nr<rows&&nc>=0&&nc<cols&&flagged[nr][nc])fc++}
+  if(fc!==board[r][c])return;
+  for(var dr=-1;dr<=1;dr++)for(var dc=-1;dc<=1;dc++){var nr=r+dr,nc=c+dc;if(nr>=0&&nr<rows&&nc>=0&&nc<cols&&!flagged[nr][nc])reveal(nr,nc)}
+  render();
+}
+function checkWin(){
+  var won=true;
+  for(var r=0;r<rows;r++)for(var c=0;c<cols;c++){if(board[r][c]!==-1&&!revealed[r][c])won=false}
+  if(won){gameWon=true;clearInterval(timerId);faceEl.textContent="😎";render()}
+}
+function render(){
+  gridEl.style.gridTemplateColumns="repeat("+cols+",1fr)";
+  gridEl.innerHTML="";
+  for(var r=0;r<rows;r++)for(var c=0;c<cols;c++){
+    var cell=document.createElement("div");
+    cell.className="mine-cell";
+    if(revealed[r][c]){
+      cell.classList.add("revealed");
+      if(board[r][c]===-1){cell.textContent="💣";if(gameOver)cell.classList.add("mine-explode")}
+      else if(board[r][c]>0){cell.textContent=board[r][c];cell.classList.add("n"+board[r][c])}
+    }else if(flagged[r][c]){
+      cell.classList.add("flagged");cell.textContent="🚩";
+    }
+    cell.addEventListener("click",function(e){
+      var idx=Array.from(gridEl.children).indexOf(this),rr=Math.floor(idx/cols),cc=idx%cols;
+      reveal(rr,cc);render();
+    });
+    cell.addEventListener("contextmenu",function(e){e.preventDefault();
+      var idx=Array.from(gridEl.children).indexOf(this),rr=Math.floor(idx/cols),cc=idx%cols;
+      toggleFlag(rr,cc);
+    });
+    cell.addEventListener("dblclick",function(e){
+      var idx=Array.from(gridEl.children).indexOf(this),rr=Math.floor(idx/cols),cc=idx%cols;
+      chord(rr,cc);
+    });
+    // Long press for flag on mobile
+    var pressTimer;
+    cell.addEventListener("touchstart",function(e){
+      pressTimer=setTimeout(function(){
+        var idx=Array.from(gridEl.children).indexOf(cell),rr=Math.floor(idx/cols),cc=idx%cols;
+        toggleFlag(rr,cc);
+      },500);
+    });
+    cell.addEventListener("touchend",function(){clearTimeout(pressTimer)});
+    cell.addEventListener("touchmove",function(){clearTimeout(pressTimer)});
+    gridEl.appendChild(cell);
+  }
+}
+function setDifficulty(r,c,m){rows=r;cols=c;totalMines=m;newGame()}
+function newGame(){init()}
+window.setDifficulty=setDifficulty;
+window.newGame=newGame;
+init();
+})();
+</script>
+</body>
+</html>
