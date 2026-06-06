@@ -1,20 +1,15 @@
-﻿<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>文本对比 - 在线工具箱</title><meta name="description" content="在线文本对比工具，对比两段文本差异，高亮显示增删改。"><link rel="stylesheet" href="../css/style.css"></head><body>
-<div class="tool-page"><a href="../index.html" class="back-link">← 返回工具箱</a><div class="tool-header"><h1>文本对比</h1><p class="desc">对比两段文本的差异，高亮显示增删改内容</p></div>
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>鏂囨湰瀵规瘮 - 鍦ㄧ嚎宸ュ叿绠?/title><meta name="description" content="鍦ㄧ嚎鏂囨湰瀵规瘮宸ュ叿锛屽姣斾袱娈垫枃鏈樊寮傦紝楂樹寒鏄剧ず澧炲垹鏀广€?><link rel="stylesheet" href="../css/style.css"></head><body>
+<div class="tool-page"><a href="../index.html" class="back-link">鈫?杩斿洖宸ュ叿绠?/a><div class="tool-header"><h1>鏂囨湰瀵规瘮</h1><p class="desc">瀵规瘮涓ゆ鏂囨湰鐨勫樊寮傦紝楂樹寒鏄剧ず澧炲垹鏀瑰唴瀹?/p></div>
 <div class="tool-body">
 <div class="diff-container">
-<div><label>原始文本</label><textarea id="oldText" style="min-height:250px">第一行内容
-第二行内容
-第三行内容
-第四行内容</textarea></div>
-<div><label>新文本</label><textarea id="newText" style="min-height:250px">第一行内容
-第二行修改了
-第三行内容
-新增的一行</textarea></div>
+<div><label>鍘熷鏂囨湰</label><textarea id="oldText" style="min-height:250px">绗竴琛屽唴瀹?绗簩琛屽唴瀹?绗笁琛屽唴瀹?绗洓琛屽唴瀹?/textarea></div>
+<div><label>鏂版枃鏈?/label><textarea id="newText" style="min-height:250px">绗竴琛屽唴瀹?绗簩琛屼慨鏀逛簡
+绗笁琛屽唴瀹?鏂板鐨勪竴琛?/textarea></div>
 </div>
-<div class="btn-group"><button class="btn btn-primary" onclick="compare()">🔍 对比差异</button><button class="btn btn-secondary" onclick="clearAll()">🗑 清空</button></div>
-<div class="result-label" style="margin-top:20px">差异结果</div>
+<div class="btn-group"><button class="btn btn-primary" onclick="compare()">馃攳 瀵规瘮宸紓</button><button class="btn btn-secondary" onclick="clearAll()">馃棏 娓呯┖</button></div>
+<div class="result-label" style="margin-top:20px">宸紓缁撴灉</div>
 <div class="result-area diff-result" id="diffResult" style="max-height:500px"></div>
-</div><div class="ad-slot">📢 广告位</div></div>
+</div><div class="ad-slot">馃摙 骞垮憡浣?/div></div>
 <script>
 function compare(){
   var oldLines=document.getElementById("oldText").value.split("\n");
@@ -29,7 +24,7 @@ function compare(){
     else if(d.type==="del")html+='<del>'+d.line+'</del>\n';
     else html+='<ins>'+d.line+'</ins>\n';
   }
-  out.innerHTML=html||"两段文本完全相同";
+  out.innerHTML=html||"涓ゆ鏂囨湰瀹屽叏鐩稿悓";
 }
 function lcsMatrix(a,b){
   var m=Array(a.length+1);
@@ -46,4 +41,11 @@ function backtrack(m,a,b,i,j){
 }
 function clearAll(){document.getElementById("oldText").value="";document.getElementById("newText").value="";document.getElementById("diffResult").innerHTML=""}
 compare();
-</script></body></html>
+</script>
+<!-- 璁块棶缁熻 -->
+<div style="margin-top:16px;font-size:.85rem;color:var(--text-secondary)">
+  <span>馃憖 鏈珯鎬昏闂?<span id="busuanzi_value_site_pv"></span> 娆?路 
+  <span id="busuanzi_value_site_uv"></span> 浜?/span>
+</div>
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+</body></html>
