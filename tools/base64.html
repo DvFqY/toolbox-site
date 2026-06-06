@@ -1,35 +1,35 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Base64 编解码 - 在线工具箱</title>
-<meta name="description" content="在线 Base64 编码解码工具，支持文本和 Unicode 字符，数据本地处理不上传。">
+<title>Base64 缂栬В鐮?- 鍦ㄧ嚎宸ュ叿绠?/title>
+<meta name="description" content="鍦ㄧ嚎 Base64 缂栫爜瑙ｇ爜宸ュ叿锛屾敮鎸佹枃鏈拰 Unicode 瀛楃锛屾暟鎹湰鍦板鐞嗕笉涓婁紶銆?>
 <link rel="stylesheet" href="../css/style.css">
 </head>
 <body>
 <div class="tool-page">
-  <a href="../index.html" class="back-link">← 返回工具箱</a>
+  <a href="../index.html" class="back-link">鈫?杩斿洖宸ュ叿绠?/a>
   <div class="tool-header">
-    <h1>Base64 编解码</h1>
-    <p class="desc">在线 Base64 编码与解码，支持中文等 Unicode 字符</p>
+    <h1>Base64 缂栬В鐮?/h1>
+    <p class="desc">鍦ㄧ嚎 Base64 缂栫爜涓庤В鐮侊紝鏀寔涓枃绛?Unicode 瀛楃</p>
   </div>
   <div class="tool-body">
     <div class="form-group">
-      <label>输入文本</label>
-      <textarea id="input" placeholder="输入要编码或解码的文本..."></textarea>
+      <label>杈撳叆鏂囨湰</label>
+      <textarea id="input" placeholder="杈撳叆瑕佺紪鐮佹垨瑙ｇ爜鐨勬枃鏈?.."></textarea>
     </div>
     <div class="btn-group">
-      <button class="btn btn-primary" onclick="encode()">🔒 Base64 编码</button>
-      <button class="btn btn-secondary" onclick="decode()">🔓 Base64 解码</button>
-      <button class="btn btn-secondary" onclick="swap()">🔄 交换输入输出</button>
-      <button class="btn btn-secondary" onclick="clearAll()">🗑 清空</button>
+      <button class="btn btn-primary" onclick="encode()">馃敀 Base64 缂栫爜</button>
+      <button class="btn btn-secondary" onclick="decode()">馃敁 Base64 瑙ｇ爜</button>
+      <button class="btn btn-secondary" onclick="swap()">馃攧 浜ゆ崲杈撳叆杈撳嚭</button>
+      <button class="btn btn-secondary" onclick="clearAll()">馃棏 娓呯┖</button>
     </div>
     <div id="error" style="color:var(--danger);margin-top:12px;font-size:.9rem;"></div>
-    <div class="result-label">输出结果 <button class="copy-btn" onclick="copyResult()">📋 复制</button></div>
+    <div class="result-label">杈撳嚭缁撴灉 <button class="copy-btn" onclick="copyResult()">馃搵 澶嶅埗</button></div>
     <div class="result-area" id="output"></div>
   </div>
-  <div class="ad-slot">📢 广告位</div>
+  <div class="ad-slot">馃摙 骞垮憡浣?/div>
 </div>
 <script>
 var input = document.getElementById("input");
@@ -40,14 +40,14 @@ function encode() {
   try {
     var encoded = btoa(unescape(encodeURIComponent(input.value)));
     output.textContent = encoded;
-  } catch (e) { errorDiv.textContent = "编码失败：" + e.message; }
+  } catch (e) { errorDiv.textContent = "缂栫爜澶辫触锛? + e.message; }
 }
 function decode() {
   errorDiv.textContent = "";
   try {
     var decoded = decodeURIComponent(escape(atob(input.value.trim())));
     output.textContent = decoded;
-  } catch (e) { errorDiv.textContent = "解码失败：请检查输入是否为有效的 Base64 字符串"; }
+  } catch (e) { errorDiv.textContent = "瑙ｇ爜澶辫触锛氳妫€鏌ヨ緭鍏ユ槸鍚︿负鏈夋晥鐨?Base64 瀛楃涓?; }
 }
 function swap() {
   var tmp = input.value;
@@ -58,10 +58,17 @@ function clearAll() { input.value = ""; output.textContent = ""; errorDiv.textCo
 function copyResult() {
   var t = output.textContent; if (!t) return;
   navigator.clipboard.writeText(t).then(function() {
-    var b = event.target; b.textContent = "✅ 已复制"; b.classList.add("copied");
-    setTimeout(function() { b.textContent = "📋 复制"; b.classList.remove("copied"); }, 2000);
+    var b = event.target; b.textContent = "鉁?宸插鍒?; b.classList.add("copied");
+    setTimeout(function() { b.textContent = "馃搵 澶嶅埗"; b.classList.remove("copied"); }, 2000);
   });
 }
 </script>
+
+<!-- 璁块棶缁熻 -->
+<div style="margin-top:16px;font-size:.85rem;color:var(--text-secondary)">
+  <span>馃憖 鏈珯鎬昏闂?<span id="busuanzi_value_site_pv"></span> 娆?路 
+  <span id="busuanzi_value_site_uv"></span> 浜?/span>
+</div>
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
 </body>
 </html>
