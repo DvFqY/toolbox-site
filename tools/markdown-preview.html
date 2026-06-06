@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Markdown 预览 - 在线工具箱</title><meta name="description" content="在线 Markdown 实时预览工具，支持 GitHub 风格 Markdown，写作 README 必备。"><link rel="stylesheet" href="../css/style.css"><script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script><style>
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Markdown 棰勮 - 鍦ㄧ嚎宸ュ叿绠?/title><meta name="description" content="鍦ㄧ嚎 Markdown 瀹炴椂棰勮宸ュ叿锛屾敮鎸?GitHub 椋庢牸 Markdown锛屽啓浣?README 蹇呭銆?><link rel="stylesheet" href="../css/style.css"><script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script><style>
 .markdown-body{font-size:.95rem;line-height:1.8;color:var(--text)}
 .markdown-body h1,.markdown-body h2,.markdown-body h3{margin-top:20px;margin-bottom:10px;font-weight:600}
 .markdown-body h1{font-size:1.6rem;border-bottom:2px solid var(--border);padding-bottom:8px}
@@ -15,17 +15,24 @@
 .editor-preview{display:grid;grid-template-columns:1fr 1fr;gap:20px}
 @media(max-width:768px){.editor-preview{grid-template-columns:1fr}}
 </style></head><body>
-<div class="tool-page"><a href="../index.html" class="back-link">← 返回工具箱</a><div class="tool-header"><h1>Markdown 预览</h1><p class="desc">实时预览 Markdown，支持 GitHub 风格语法</p></div>
+<div class="tool-page"><a href="../index.html" class="back-link">鈫?杩斿洖宸ュ叿绠?/a><div class="tool-header"><h1>Markdown 棰勮</h1><p class="desc">瀹炴椂棰勮 Markdown锛屾敮鎸?GitHub 椋庢牸璇硶</p></div>
 <div class="tool-body"><div class="editor-preview">
-<div class="form-group"><label>Markdown 编辑</label><textarea id="input" oninput="preview()" style="min-height:400px"># Markdown 预览
-**粗体** *斜体* `代码`
-> 引用文字
-- 列表项 1
-- 列表项 2
-| 表格 | 示例 |
+<div class="form-group"><label>Markdown 缂栬緫</label><textarea id="input" oninput="preview()" style="min-height:400px"># Markdown 棰勮
+**绮椾綋** *鏂滀綋* `浠ｇ爜`
+> 寮曠敤鏂囧瓧
+- 鍒楄〃椤?1
+- 鍒楄〃椤?2
+| 琛ㄦ牸 | 绀轰緥 |
 |------|------|
 | A | B |</textarea></div>
-<div><label>预览效果</label><div id="preview" class="markdown-body" style="min-height:400px;border:1px solid var(--border);border-radius:var(--radius-sm);padding:20px;margin-top:6px;background:var(--surface)"></div></div>
+<div><label>棰勮鏁堟灉</label><div id="preview" class="markdown-body" style="min-height:400px;border:1px solid var(--border);border-radius:var(--radius-sm);padding:20px;margin-top:6px;background:var(--surface)"></div></div>
 </div></div>
-<div class="ad-slot">📢 广告位</div></div>
-<script>function preview(){document.getElementById("preview").innerHTML=marked.parse(document.getElementById("input").value)}preview()</script></body></html>
+<div class="ad-slot">馃摙 骞垮憡浣?/div></div>
+<script>function preview(){document.getElementById("preview").innerHTML=marked.parse(document.getElementById("input").value)}preview()</script>
+<!-- 璁块棶缁熻 -->
+<div style="margin-top:16px;font-size:.85rem;color:var(--text-secondary)">
+  <span>馃憖 鏈珯鎬昏闂?<span id="busuanzi_value_site_pv"></span> 娆?路 
+  <span id="busuanzi_value_site_uv"></span> 浜?/span>
+</div>
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+</body></html>
