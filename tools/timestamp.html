@@ -1,0 +1,18 @@
+﻿<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>时间戳转换 - 在线工具箱</title><meta name="description" content="在线 Unix 时间戳转换工具，时间戳与日期互转，支持秒/毫秒级精度。"><link rel="stylesheet" href="../css/style.css"></head><body>
+<div class="tool-page"><a href="../index.html" class="back-link">← 返回工具箱</a><div class="tool-header"><h1>时间戳转换</h1><p class="desc">Unix 时间戳与日期时间互相转换</p></div>
+<div class="tool-body">
+<div style="margin-bottom:20px;padding:14px;background:var(--bg);border-radius:var(--radius-sm);font-family:monospace;text-align:center" id="nowTs">当前时间戳（秒）：--</div>
+<div class="form-group"><label>时间戳 → 日期</label><div style="display:flex;gap:10px"><input type="text" id="tsInput" placeholder="输入时间戳，如 1700000000" style="flex:1"><button class="btn btn-primary btn-sm" onclick="tsToDate()">转换</button></div></div>
+<div class="result-area" id="dateResult"></div>
+<div class="form-group" style="margin-top:20px"><label>日期 → 时间戳</label><div style="display:flex;gap:10px"><input type="datetime-local" id="dtInput" style="flex:1"><button class="btn btn-primary btn-sm" onclick="dateToTs()">转换</button></div></div>
+<div class="result-area" id="tsResult"></div>
+<div class="btn-group"><button class="btn btn-secondary btn-sm" onclick="useNow()">🕐 使用当前时间</button><button class="btn btn-secondary btn-sm" onclick="copyTs()">📋 复制秒级时间戳</button></div>
+</div><div class="ad-slot">📢 广告位</div></div>
+<script>
+setInterval(function(){document.getElementById("nowTs").textContent="当前时间戳（秒）："+Math.floor(Date.now()/1000)},1000);
+function tsToDate(){var v=document.getElementById("tsInput").value.trim();if(!v)return;var ts=parseInt(v);if(ts<1e12)ts*=1000;var d=new Date(ts);document.getElementById("dateResult").textContent="UTC: "+d.toUTCString()+"\n本地: "+d.toLocaleString("zh-CN")+"\nISO: "+d.toISOString()}
+function dateToTs(){var v=document.getElementById("dtInput").value;if(!v)return;var d=new Date(v);document.getElementById("tsResult").textContent="秒级: "+Math.floor(d.getTime()/1000)+"\n毫秒级: "+d.getTime()}
+function useNow(){var d=new Date();document.getElementById("dtInput").value=d.toISOString().slice(0,16);document.getElementById("tsInput").value=Math.floor(d.getTime()/1000)}
+function copyTs(){navigator.clipboard.writeText(String(Math.floor(Date.now()/1000))).then(function(){var b=event.target;b.textContent="✅ 已复制";setTimeout(function(){b.textContent="📋 复制秒级时间戳"},2000)})}
+useNow();
+</script></body></html>

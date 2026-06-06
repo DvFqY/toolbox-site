@@ -1,0 +1,28 @@
+﻿<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>颜色转换 - 在线工具箱</title><meta name="description" content="在线颜色转换工具：HEX/RGB/HSL 互相转换，实时预览颜色效果。"><link rel="stylesheet" href="../css/style.css"></head><body>
+<div class="tool-page"><a href="../index.html" class="back-link">← 返回工具箱</a><div class="tool-header"><h1>颜色转换</h1><p class="desc">HEX / RGB / HSL 互相转换，实时颜色预览</p></div>
+<div class="tool-body">
+<div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:20px">
+<input type="color" id="picker" value="#6366f1" oninput="fromPicker()" style="width:60px;height:44px;border:none;border-radius:8px;cursor:pointer">
+<input type="text" id="hexInput" placeholder="HEX 如 #6366f1" oninput="fromHex()" style="flex:1;min-width:200px">
+</div>
+<div class="color-preview" id="preview" style="background:#6366f1"></div>
+<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-top:16px">
+<div class="stat-card"><div class="lbl">RGB</div><div class="num" id="rgbVal" style="font-size:.9rem;word-break:break-all">rgb(99,102,241)</div><button class="copy-btn" onclick="copyVal("rgbVal")" style="margin-top:6px">📋</button></div>
+<div class="stat-card"><div class="lbl">HEX</div><div class="num" id="hexVal" style="font-size:.9rem;word-break:break-all">#6366f1</div><button class="copy-btn" onclick="copyVal("hexVal")" style="margin-top:6px">📋</button></div>
+<div class="stat-card"><div class="lbl">HSL</div><div class="num" id="hslVal" style="font-size:.9rem;word-break:break-all">hsl(239,84%,67%)</div><button class="copy-btn" onclick="copyVal("hslVal")" style="margin-top:6px">📋</button></div>
+</div></div><div class="ad-slot">📢 广告位</div></div>
+<script>
+function hexToRgb(h){var r=/^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(h);return r?{r:parseInt(r[1],16),g:parseInt(r[2],16),b:parseInt(r[3],16)}:null}
+function rgbToHsl(r,g,b){r/=255;g/=255;b/=255;var max=Math.max(r,g,b),min=Math.min(r,g,b),h=0,s,l=(max+min)/2;if(max!==min){var d=max-min;s=l>.5?d/(2-max-min):d/(max+min);switch(max){case r:h=((g-b)/d+(g<b?6:0))/6;break;case g:h=((b-r)/d+2)/6;break;case b:h=((r-g)/d+4)/6;break}}return{h:Math.round(h*360),s:Math.round(s*100),l:Math.round(l*100)}}
+function updateAll(hex){var rgb=hexToRgb(hex);if(!rgb)return;var hsl=rgbToHsl(rgb.r,rgb.g,rgb.b);var h="#"+(hex.startsWith("#")?hex.slice(1):hex);
+document.getElementById("rgbVal").textContent="rgb("+rgb.r+","+rgb.g+","+rgb.b+")";
+document.getElementById("hexVal").textContent=h;
+document.getElementById("hslVal").textContent="hsl("+hsl.h+","+hsl.s+"%,"+hsl.l+"%)";
+document.getElementById("preview").style.background=h;
+document.getElementById("picker").value=h;
+document.getElementById("hexInput").value=h;
+}
+function fromPicker(){updateAll(document.getElementById("picker").value)}
+function fromHex(){var v=document.getElementById("hexInput").value.trim();if(v)updateAll(v)}
+function copyVal(id){var t=document.getElementById(id).textContent;navigator.clipboard.writeText(t).then(function(){var b=event.target;b.textContent="✅";setTimeout(function(){b.textContent="📋"},1500)})}
+</script></body></html>

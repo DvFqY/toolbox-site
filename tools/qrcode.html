@@ -1,0 +1,38 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>二维码生成器 - 在线工具箱</title>
+<meta name="description" content="在线二维码生成器，输入文本或链接一键生成高清二维码图片，免费下载。">
+<link rel="stylesheet" href="../css/style.css">
+<script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+</head>
+<body>
+<div class="tool-page">
+  <a href="../index.html" class="back-link">← 返回工具箱</a>
+  <div class="tool-header"><h1>二维码生成器</h1><p class="desc">输入文本或链接，一键生成高清二维码图片</p></div>
+  <div class="tool-body">
+    <div class="form-group"><label>输入内容（网址、文本等）</label><input type="text" id="input" placeholder="https://example.com 或任意文本" oninput="generateQR()"></div>
+    <div class="btn-group">
+      <button class="btn btn-secondary btn-sm" onclick="downloadQR()">💾 下载 PNG</button>
+    </div>
+    <div class="qr-wrap" id="qrContainer"></div>
+  </div>
+  <div class="ad-slot">📢 广告位</div>
+</div>
+<script>
+var input=document.getElementById("input"),container=document.getElementById("qrContainer"),canvasEl=null;
+function generateQR(){
+  container.innerHTML="";
+  var text=input.value.trim();
+  if(!text){container.innerHTML='<p style="color:var(--text-secondary)">输入内容后自动生成二维码</p>';return}
+  try{
+    var canvas=document.createElement("canvas");
+    QRCode.toCanvas(canvas,text,{width:280,margin:1,color:{dark:"#1e293b",light:"#ffffff"}},function(err){if(err){container.innerHTML='<p style="color:var(--danger)">生成失败</p>';return}container.appendChild(canvas);canvasEl=canvas})
+  }catch(e){container.innerHTML='<p style="color:var(--danger)">生成失败</p>'}
+}
+function downloadQR(){if(!canvasEl)return;var link=document.createElement("a");link.download="qrcode.png";link.href=canvasEl.toDataURL("image/png");link.click()}
+</script>
+</body>
+</html>

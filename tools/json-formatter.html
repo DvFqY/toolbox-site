@@ -1,0 +1,109 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>JSON 格式化 - 在线工具箱</title>
+<meta name="description" content="在线 JSON 格式化工具：格式化、压缩、验证 JSON 数据，支持语法高亮和错误提示，保护数据隐私。">
+<link rel="stylesheet" href="../css/style.css">
+<style>
+.json-key { color: #0550ae; }
+.json-string { color: #0a3069; }
+.json-number { color: #cf222e; }
+.json-boolean { color: #8250df; }
+.json-null { color: #6e7781; }
+.json-bracket { color: #1f2328; }
+</style>
+</head>
+<body>
+<div class="tool-page">
+  <a href="../index.html" class="back-link">← 返回工具箱</a>
+  <div class="tool-header">
+    <h1>JSON 格式化</h1>
+    <p class="desc">格式化、压缩、验证 JSON 数据，自动语法高亮</p>
+  </div>
+  <div class="tool-body">
+    <div class="form-group">
+      <label>输入 JSON 文本</label>
+      <textarea id="input" placeholder='{"name":"在线工具箱","tools":["json","base64"]}'></textarea>
+    </div>
+    <div class="btn-group">
+      <button class="btn btn-primary" onclick="formatJSON()">✨ 格式化</button>
+      <button class="btn btn-secondary" onclick="compressJSON()">📦 压缩</button>
+      <button class="btn btn-secondary" onclick="validateJSON()">✅ 验证</button>
+      <button class="btn btn-secondary" onclick="clearAll()">🗑 清空</button>
+    </div>
+    <div id="error" style="color:var(--danger);margin-top:12px;font-size:.9rem;"></div>
+    <div class="result-label">输出结果 <button class="copy-btn" onclick="copyResult()">📋 复制</button></div>
+    <div class="result-area" id="output"></div>
+  </div>
+  <div class="ad-slot">📢 广告位</div>
+</div>
+<script>
+var input = document.getElementById("input");
+var output = document.getElementById("output");
+var errorDiv = document.getElementById("error");
+
+function syntaxHighlight(json) {
+  json = json.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  return json.replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^"\\])*"(s*:)?|\b(true|false|null)b|-?d+(?:.d*)?(?:[eE][+-]?d+)?)/g, function(match) {
+    var cls = "json-number";
+    if (/^"/.test(match)) {
+      if (/:$/.test(match)) { cls = "json-key"; } else { cls = "json-string"; }
+    } else if (/true|false/.test(match)) { cls = "json-boolean"; }
+    else if (/null/.test(match)) { cls = "json-null"; }
+    return '<span class="' + cls + '">' + match + "</span>";
+  });
+}
+
+function formatJSON() {
+  errorDiv.textContent = "";
+  output.innerHTML = "";
+  try {
+    var obj = JSON.parse(input.value);
+    var formatted = JSON.stringify(obj, null, 2);
+    output.innerHTML = syntaxHighlight(formatted);
+  } catch (e) {
+    errorDiv.textContent = "❌ JSON 解析错误：" + e.message;
+  }
+}
+
+function compressJSON() {
+  errorDiv.textContent = "";
+  output.innerHTML = "";
+  try {
+    var obj = JSON.parse(input.value);
+    output.textContent = JSON.stringify(obj);
+  } catch (e) {
+    errorDiv.textContent = "❌ JSON 解析错误：" + e.message;
+  }
+}
+
+function validateJSON() {
+  errorDiv.textContent = "";
+  output.innerHTML = "";
+  try {
+    JSON.parse(input.value);
+    errorDiv.textContent = "✅ JSON 格式正确！";
+    errorDiv.style.color = "var(--success)";
+  } catch (e) {
+    errorDiv.textContent = "❌ JSON 解析错误：" + e.message;
+    errorDiv.style.color = "var(--danger)";
+  }
+}
+
+function clearAll() { input.value = ""; output.innerHTML = ""; errorDiv.textContent = ""; }
+
+function copyResult() {
+  var text = output.textContent;
+  if (!text) return;
+  navigator.clipboard.writeText(text).then(function() {
+    var btn = event.target;
+    btn.textContent = "✅ 已复制";
+    btn.classList.add("copied");
+    setTimeout(function() { btn.textContent = "📋 复制"; btn.classList.remove("copied"); }, 2000);
+  });
+}
+</script>
+</body>
+</html>

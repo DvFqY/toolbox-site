@@ -1,0 +1,152 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>在线工具箱 - 免费实用在线工具集合</title>
+<meta name="description" content="免费在线工具箱：JSON格式化、Base64编解码、二维码生成、密码生成、时间戳转换等12+实用工具，无需下载安装，即开即用。">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<header class="site-header">
+  <div class="header-inner">
+    <a href="/" class="logo">
+      <svg viewBox="0 0 28 28" fill="none"><rect width="28" height="28" rx="7" fill="#6366f1"/><path d="M7 14h3l2-5 4 10 2-5h3" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      在线工具箱
+    </a>
+    <nav class="header-nav">
+      <a href="/">首页</a>
+      <a href="#dev">开发工具</a>
+      <a href="#text">文本工具</a>
+      <a href="#convert">转换工具</a>
+    </nav>
+  </div>
+</header>
+
+<section class="hero">
+  <h1>🔧 免费在线工具箱</h1>
+  <p>12+ 实用工具，无需下载安装，打开浏览器就能用。开发者必备、日常办公利器。</p>
+  <span class="hero-badge">🆓 全部免费 · 无需注册 · 数据不上传</span>
+</section>
+
+<main class="main-content">
+  <div class="search-wrap">
+    <span class="search-icon">🔍</span>
+    <input type="text" class="search-input" id="searchBox" placeholder="搜索工具... 比如 JSON、二维码、密码">
+  </div>
+
+  <!-- 开发工具 -->
+  <section class="section" id="dev">
+    <h2 class="section-title"><span class="icon">💻</span> 开发工具</h2>
+    <div class="tool-grid">
+      <a href="tools/json-formatter.html" class="tool-card">
+        <div class="tool-card-icon icon-purple">{ }</div>
+        <h3>JSON 格式化</h3>
+        <p>格式化、压缩、验证 JSON 数据，支持语法高亮和错误提示</p>
+      </a>
+      <a href="tools/base64.html" class="tool-card">
+        <div class="tool-card-icon icon-blue">64</div>
+        <h3>Base64 编解码</h3>
+        <p>在线 Base64 编码与解码，支持文本和文件</p>
+      </a>
+      <a href="tools/url-encoder.html" class="tool-card">
+        <div class="tool-card-icon icon-green">%</div>
+        <h3>URL 编解码</h3>
+        <p>URL Encode / Decode，处理特殊字符和中文参数</p>
+      </a>
+      <a href="tools/css-minifier.html" class="tool-card">
+        <div class="tool-card-icon icon-purple">{CSS}</div>
+        <h3>CSS 压缩</h3>
+        <p>压缩 CSS 代码，移除注释和空白，减小文件体积</p>
+      </a>
+    </div>
+  </section>
+
+  <!-- 文本工具 -->
+  <section class="section" id="text">
+    <h2 class="section-title"><span class="icon">📝</span> 文本工具</h2>
+    <div class="tool-grid">
+      <a href="tools/markdown-preview.html" class="tool-card">
+        <div class="tool-card-icon icon-cyan">MD</div>
+        <h3>Markdown 预览</h3>
+        <p>实时预览 Markdown，支持 GitHub 风格，写 README 必备</p>
+      </a>
+      <a href="tools/word-counter.html" class="tool-card">
+        <div class="tool-card-icon icon-orange">W</div>
+        <h3>字数统计</h3>
+        <p>统计字符数、单词数、行数、段落数，写作好帮手</p>
+      </a>
+      <a href="tools/diff-checker.html" class="tool-card">
+        <div class="tool-card-icon icon-pink">≠</div>
+        <h3>文本对比</h3>
+        <p>对比两段文本差异，高亮显示增删改内容</p>
+      </a>
+    </div>
+  </section>
+
+  <!-- 生成工具 -->
+  <section class="section" id="generate">
+    <h2 class="section-title"><span class="icon">🎲</span> 生成工具</h2>
+    <div class="tool-grid">
+      <a href="tools/qrcode.html" class="tool-card">
+        <div class="tool-card-icon icon-purple">QR</div>
+        <h3>二维码生成</h3>
+        <p>输入文本或链接，一键生成高清二维码图片，可下载</p>
+      </a>
+      <a href="tools/password-generator.html" class="tool-card">
+        <div class="tool-card-icon icon-blue">🔑</div>
+        <h3>密码生成器</h3>
+        <p>生成高强度随机密码，自定义长度和字符类型</p>
+      </a>
+      <a href="tools/uuid-generator.html" class="tool-card">
+        <div class="tool-card-icon icon-green">ID</div>
+        <h3>UUID 生成器</h3>
+        <p>批量生成 UUID v4，支持一键复制</p>
+      </a>
+    </div>
+  </section>
+
+  <!-- 转换工具 -->
+  <section class="section" id="convert">
+    <h2 class="section-title"><span class="icon">🔄</span> 转换工具</h2>
+    <div class="tool-grid">
+      <a href="tools/color-converter.html" class="tool-card">
+        <div class="tool-card-icon icon-orange">🎨</div>
+        <h3>颜色转换</h3>
+        <p>HEX / RGB / HSL 互相转换，实时预览颜色效果</p>
+      </a>
+      <a href="tools/timestamp.html" class="tool-card">
+        <div class="tool-card-icon icon-cyan">⏰</div>
+        <h3>时间戳转换</h3>
+        <p>Unix 时间戳与日期互转，支持秒/毫秒级精度</p>
+      </a>
+    </div>
+  </section>
+</main>
+
+<!-- 广告位 -->
+<div style="max-width:1200px;margin:0 auto 40px;padding:0 24px;">
+  <div class="ad-slot">📢 广告位 — 接入 Google AdSense 后自动展示</div>
+</div>
+
+<footer class="site-footer">
+  <p>© 2026 在线工具箱 · 所有工具均在浏览器本地运行，不会上传您的数据</p>
+  <p style="margin-top:6px;"><a href="/">首页</a> · <a href="#dev">开发工具</a> · <a href="#text">文本工具</a></p>
+</footer>
+
+<script>
+// Search
+document.getElementById("searchBox").addEventListener("input", function(e) {
+  var q = e.target.value.toLowerCase();
+  document.querySelectorAll(".tool-card").forEach(function(card) {
+    var text = card.textContent.toLowerCase();
+    card.style.display = text.includes(q) ? "" : "none";
+  });
+  document.querySelectorAll(".section").forEach(function(sec) {
+    var vis = sec.querySelectorAll('.tool-card[style*="display:"]').length < sec.querySelectorAll(".tool-card").length;
+    sec.style.display = vis ? "" : "none";
+  });
+});
+</script>
+</body>
+</html>

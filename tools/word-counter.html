@@ -1,0 +1,22 @@
+﻿<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>字数统计 - 在线工具箱</title><meta name="description" content="在线字数统计工具，统计字符数、单词数、行数、段落数。"><link rel="stylesheet" href="../css/style.css"></head><body>
+<div class="tool-page"><a href="../index.html" class="back-link">← 返回工具箱</a><div class="tool-header"><h1>字数统计</h1><p class="desc">统计文本的字符数、单词数、行数、段落数等</p></div>
+<div class="tool-body">
+<div class="form-group"><label>输入文本</label><textarea id="input" oninput="count()" placeholder="在此输入或粘贴文本..."></textarea></div>
+<div class="stats-grid">
+<div class="stat-card"><div class="num" id="chars">0</div><div class="lbl">总字符数</div></div>
+<div class="stat-card"><div class="num" id="charsNoSpace">0</div><div class="lbl">字符数(无空格)</div></div>
+<div class="stat-card"><div class="num" id="words">0</div><div class="lbl">单词数</div></div>
+<div class="stat-card"><div class="num" id="cnChars">0</div><div class="lbl">中文字数</div></div>
+<div class="stat-card"><div class="num" id="lines">0</div><div class="lbl">行数</div></div>
+<div class="stat-card"><div class="num" id="paras">0</div><div class="lbl">段落数</div></div>
+</div></div><div class="ad-slot">📢 广告位</div></div>
+<script>
+function count(){var t=document.getElementById("input").value;
+document.getElementById("chars").textContent=t.length;
+document.getElementById("charsNoSpace").textContent=t.replace(/s/g,"").length;
+document.getElementById("words").textContent=(t.trim()?(t.trim().split(/s+/).length):0);
+document.getElementById("cnChars").textContent=(t.match(/[u4e00-u9fff]/g)||[]).length;
+document.getElementById("lines").textContent=(t?(t.split("\n").length):0);
+document.getElementById("paras").textContent=(t.trim()?(t.trim().split(/\n\s*\n/).length):0);
+}
+</script></body></html>
