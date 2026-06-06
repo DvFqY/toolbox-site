@@ -6,497 +6,430 @@
 <title>塔防战争 - 在线工具箱</title>
 <link rel="stylesheet" href="../css/style.css">
 <style>
-.td-wrap{display:flex;gap:16px;flex-wrap:wrap;justify-content:center;align-items:flex-start}
-.td-canvas-wrap{position:relative;border-radius:12px;overflow:hidden;box-shadow:0 4px 30px rgba(0,0,0,.12)}
-.td-sidebar{width:200px;display:flex;flex-direction:column;gap:10px}
+.td-wrap{display:flex;gap:14px;flex-wrap:wrap;justify-content:center;align-items:flex-start}
+.td-sidebar{width:210px;display:flex;flex-direction:column;gap:8px}
 .td-info{background:var(--surface);border-radius:10px;padding:12px;border:1px solid var(--border)}
-.td-info .row{display:flex;justify-content:space-between;font-size:.85rem;margin:4px 0}
+.td-info .row{display:flex;justify-content:space-between;font-size:.84rem;margin:3px 0}
 .td-info .lbl{color:var(--text-secondary)}.td-info .val{font-weight:700}
-.td-towers{display:flex;flex-direction:column;gap:6px}
-.td-tower-btn{display:flex;align-items:center;gap:8px;padding:8px 12px;border-radius:8px;border:1.5px solid var(--border);background:var(--surface);cursor:pointer;transition:all .2s;text-align:left;font-size:.82rem}
-.td-tower-btn:hover{border-color:var(--primary);box-shadow:0 2px 8px rgba(99,102,241,.15)}
+.td-tower-btn{display:flex;align-items:center;gap:8px;padding:7px 10px;border-radius:8px;border:1.5px solid var(--border);background:var(--surface);cursor:pointer;transition:all .2s;font-size:.8rem;opacity:.5;pointer-events:none}
+.td-tower-btn.unlocked{opacity:1;pointer-events:auto}
+.td-tower-btn:hover.unlocked{border-color:var(--primary);box-shadow:0 2px 8px rgba(99,102,241,.15)}
 .td-tower-btn.selected{border-color:var(--primary);background:var(--primary-light)}
-.td-tower-icon{width:32px;height:32px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0}
-.td-tower-info{flex:1}.td-tower-name{font-weight:600;font-size:.82rem}.td-tower-cost{font-size:.75rem;color:var(--text-secondary)}
-.td-hint{font-size:.8rem;color:var(--text-secondary);text-align:center;margin-top:6px}
-@media(max-width:700px){.td-wrap{flex-direction:column-reverse;align-items:center}.td-sidebar{width:100%;flex-direction:row;flex-wrap:wrap;gap:8px;justify-content:center}.td-info{flex:1;min-width:140px}}
+.td-tower-btn.locked{opacity:.35;pointer-events:none;filter:grayscale(1)}
+.td-tower-icon{width:30px;height:30px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0}
+.td-tower-name{font-weight:600;font-size:.8rem}.td-tower-cost{font-size:.72rem;color:var(--text-secondary)}
+.level-select{display:flex;gap:6px;flex-wrap:wrap}
+.lvl-btn{padding:4px 10px;border-radius:14px;border:1.5px solid var(--border);background:var(--surface);cursor:pointer;font-size:.78rem;transition:all .2s}
+.lvl-btn:hover{border-color:var(--primary)}.lvl-btn.active{background:var(--primary);color:#fff;border-color:var(--primary)}
+.lvl-btn.locked{opacity:.35;cursor:not-allowed}
+.td-canvas-wrap{border-radius:12px;overflow:hidden;box-shadow:0 4px 30px rgba(0,0,0,.12);background:#1a1a2e}
 </style>
 </head>
 <body>
 <div class="tool-page">
   <a href="../index.html" class="back-link">← 返回工具箱</a>
-  <div class="tool-header"><h1>🏰 塔防战争</h1><p class="desc">2.5D等距视角 · 4种防御塔 · 5个关卡 · 点击空地造塔 · 点击已有塔升级</p></div>
+  <div class="tool-header"><h1>🏰 塔防战争</h1><p class="desc">2.5D等距视角 · 塔/敌人渐进解锁 · 保卫家园抵挡入侵</p></div>
   <div class="tool-body">
+    <div class="level-select" id="levelBtns"></div>
+    <div style="height:8px"></div>
     <div class="td-wrap">
+      <div class="td-canvas-wrap"><canvas id="tdCanvas"></canvas></div>
       <div class="td-sidebar">
         <div class="td-info">
           <div class="row"><span class="lbl">❤️ 生命</span><span class="val" id="lives">20</span></div>
           <div class="row"><span class="lbl">💰 金币</span><span class="val" id="gold">200</span></div>
-          <div class="row"><span class="lbl">🌊 波次</span><span class="val" id="wave">1/5</span></div>
-          <div class="row"><span class="lbl">🏰 关卡</span><span class="val" id="level">1</span></div>
-          <div class="row"><span class="lbl">🗡️ 击杀</span><span class="val" id="kills">0</span></div>
+          <div class="row"><span class="lbl">🌊 波次</span><span class="val" id="waveDisp">1/3</span></div>
+          <div class="row"><span class="lbl">🗡 击杀</span><span class="val" id="kills">0</span></div>
+          <div class="row"><span class="lbl">🏆 通关</span><span class="val" id="cleared">-</span></div>
         </div>
-        <div class="td-towers" id="towerList"></div>
-        <div class="btn-group" style="flex-direction:column;gap:6px">
-          <button class="btn btn-primary btn-sm" id="btnStart">▶ 开始波次</button>
-          <button class="btn btn-secondary btn-sm" id="btnSpeed">⏩ x1</button>
-          <button class="btn btn-secondary btn-sm" id="btnSave">💾 存档</button>
-          <button class="btn btn-secondary btn-sm" id="btnLoad">📂 读档</button>
+        <div id="towerList" style="display:flex;flex-direction:column;gap:5px"></div>
+        <div style="display:flex;flex-direction:column;gap:5px">
+          <button class="btn btn-primary btn-sm" id="btnWave">▶ 开始波次</button>
+          <div style="display:flex;gap:5px">
+            <button class="btn btn-secondary btn-sm" id="btnSpeed" style="flex:1">⏩ x1</button>
+            <button class="btn btn-secondary btn-sm" id="btnSave" style="flex:1">💾 存档</button>
+            <button class="btn btn-secondary btn-sm" id="btnLoad" style="flex:1">📂 读档</button>
+          </div>
         </div>
-        <p class="td-hint">← 选择防御塔 → 点击空地放置<br>点击已有塔可升级 (💰)</p>
+        <p style="font-size:.75rem;color:var(--text-secondary);text-align:center">选塔→点地图放置 | 点已有塔升级</p>
       </div>
-      <div class="td-canvas-wrap"><canvas id="tdCanvas"></canvas></div>
     </div>
   </div>
   <div class="ad-slot">📢 广告位</div>
 </div>
 <div style="margin-top:16px;font-size:.85rem;color:var(--text-secondary);text-align:center">
-  <span>👀 本站总访问 <span id="busuanzi_value_site_pv"></span> 次 · <span id="busuanzi_value_site_uv"></span> 人</span>
+  <span>👀 总访问 <span id="busuanzi_value_site_pv"></span> · <span id="busuanzi_value_site_uv"></span> 人</span>
 </div>
 <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
 <script src="../js/music-player.js"></script>
 <script src="../js/ambient-effects.js"></script>
 <script>
-// ===== 2.5D Tower Defense Game =====
 (function(){
-var canvas=document.getElementById("tdCanvas"),ctx=canvas.getContext("2d");
-var COLS=12,ROWS=10,TILE_W=64,TILE_H=32;
-canvas.width=COLS*TILE_W/2+ROWS*TILE_W/2+40;canvas.height=ROWS*TILE_H+COLS*TILE_H/2+100;
+var cvs=document.getElementById("tdCanvas"),ctx=cvs.getContext("2d");
+var COLS=14,ROWS=10,TW=58,TH=29;
+cvs.width=COLS*TW/2+ROWS*TW/2+40;cvs.height=ROWS*TH+COLS*TH/2+140;
 
-var TILE_GRASS=0,TILE_PATH=1,TILE_START=2,TILE_END=3;
-
-// Tower types
-var TOWER_TYPES=[
-  {id:"arrow",name:"箭塔",icon:"🏹",cost:50,dmg:15,range:3,cd:30,color:"#10b981",desc:"快速射击"},
-  {id:"cannon",name:"炮塔",icon:"💣",cost:100,dmg:40,range:2.5,cd:60,color:"#f59e0b",desc:"范围伤害",splash:1.2},
-  {id:"ice",name:"冰塔",icon:"❄️",cost:75,dmg:8,range:3,cd:40,color:"#3b82f6",desc:"减速敌人",slow:0.4},
-  {id:"lightning",name:"雷塔",icon:"⚡",cost:120,dmg:25,range:3.5,cd:45,color:"#8b5cf6",desc:"连锁闪电",chain:2}
+// ===== DATA =====
+var TOWERS=[
+  {id:"arrow",name:"箭塔",icon:"🏹",cost:50,dmg:18,range:2.8,cd:35,color:"#10b981",splash:0,slow:0,chain:0,desc:"快速单体",unlockLvl:0},
+  {id:"cannon",name:"炮塔",icon:"💣",cost:100,dmg:50,range:2.3,cd:65,color:"#f59e0b",splash:1.5,slow:0,chain:0,desc:"范围溅射",unlockLvl:1},
+  {id:"ice",name:"冰塔",icon:"❄️",cost:80,dmg:10,range:3,cd:45,color:"#3b82f6",splash:0,slow:45,chain:0,desc:"减速冰冻",unlockLvl:1},
+  {id:"magic",name:"雷塔",icon:"⚡",cost:130,dmg:30,range:3.5,cd:50,color:"#8b5cf6",splash:0,slow:0,chain:3,desc:"连锁闪电",unlockLvl:2},
+  {id:"sniper",name:"狙塔",icon:"🎯",cost:180,dmg:120,range:5,cd:90,color:"#ef4444",splash:0,slow:0,chain:0,desc:"超远狙击",unlockLvl:3}
 ];
 
-// Level definitions: {map, path, waves, startGold, startLives}
+var ENEMIES=[
+  {id:"rat",name:"老鼠",hp:60,spd:1.0,reward:12,color:"#94a3b8",size:7,shape:"circle",unlockLvl:0},
+  {id:"wolf",name:"野狼",hp:140,spd:1.5,reward:22,color:"#78716c",size:9,shape:"diamond",unlockLvl:1},
+  {id:"boar",name:"野猪",hp:320,spd:.65,reward:40,color:"#78350f",size:12,shape:"hex",unlockLvl:1},
+  {id:"mage",name:"法师",hp:200,spd:1.0,reward:35,color:"#7c3aed",size:10,shape:"star",unlockLvl:2,heal:3},
+  {id:"dragon",name:"幼龙",hp:600,spd:.55,reward:120,color:"#dc2626",size:15,shape:"pentagon",unlockLvl:3,fire:1}
+];
+
 var LEVELS=[
-  {name:"翠绿平原",gold:200,lives:20,waves:[
-    {enemies:[{type:"basic",count:8,interval:30}],reward:80},
-    {enemies:[{type:"basic",count:10},{type:"fast",count:3,interval:25}],reward:100},
-    {enemies:[{type:"basic",count:8},{type:"fast",count:5},{type:"tank",count:2,interval:40}],reward:150},
-    {enemies:[{type:"fast",count:8},{type:"tank",count:4,interval:35}],reward:180},
-    {enemies:[{type:"tank",count:5},{type:"fast",count:10},{type:"boss",count:1,interval:80}],reward:300}
-  ],path:[[0,4],[1,4],[2,4],[3,4],[4,4],[4,3],[4,2],[3,2],[2,2],[1,2],[1,3],[1,4],[0,4]]},
-  {name:"蜿蜒峡谷",gold:250,lives:15,waves:[
-    {enemies:[{type:"basic",count:10,interval:25}],reward:100},
-    {enemies:[{type:"fast",count:8},{type:"basic",count:6,interval:22}],reward:130},
-    {enemies:[{type:"tank",count:4},{type:"fast",count:8,interval:25}],reward:180},
-    {enemies:[{type:"tank",count:6},{type:"fast",count:10,interval:22}],reward:220},
-    {enemies:[{type:"boss",count:1},{type:"tank",count:4,interval:40},{type:"fast",count:6}],reward:350}
-  ],path:[[0,2],[1,2],[2,2],[3,2],[4,2],[5,2],[5,3],[5,4],[5,5],[4,5],[3,5],[2,5],[1,5],[1,4],[1,3],[2,3],[3,3],[4,3],[4,4],[3,4],[2,4],[1,4],[0,4]]},
-  {name:"黑暗森林",gold:300,lives:12,waves:[
-    {enemies:[{type:"fast",count:12,interval:20}],reward:120},
-    {enemies:[{type:"tank",count:5},{type:"fast",count:8,interval:18}],reward:160},
-    {enemies:[{type:"tank",count:7},{type:"basic",count:10,interval:20}],reward:200},
-    {enemies:[{type:"fast",count:12},{type:"tank",count:5,interval:18}],reward:250},
-    {enemies:[{type:"boss",count:2,interval:60},{type:"tank",count:5},{type:"fast",count:8}],reward:400}
-  ],path:[[0,7],[1,7],[2,7],[3,7],[4,7],[4,6],[3,6],[2,6],[1,6],[0,6],[0,5],[1,5],[2,5],[3,5],[4,5],[4,4],[3,4],[2,4],[1,4],[0,4],[0,3],[1,3],[2,3],[3,3],[4,3],[4,2],[3,2],[2,2],[1,2],[0,2]]},
-  {name:"熔岩之地",gold:350,lives:10,waves:[
-    {enemies:[{type:"tank",count:8,interval:28}],reward:150},
-    {enemies:[{type:"tank",count:6},{type:"fast",count:10,interval:18}],reward:200},
-    {enemies:[{type:"boss",count:1},{type:"tank",count:5,interval:30}],reward:280},
-    {enemies:[{type:"fast",count:15,interval:15},{type:"tank",count:5,interval:25}],reward:300},
-    {enemies:[{type:"boss",count:2,interval:40},{type:"tank",count:8,interval:20},{type:"fast",count:10}],reward:500}
-  ],path:[[0,1],[1,1],[2,1],[3,1],[4,1],[5,1],[6,1],[7,1],[8,1],[9,1],[10,1],[11,1],[11,2],[10,2],[9,2],[8,2],[7,2],[6,2],[5,2],[4,2],[3,2],[2,2],[1,2],[0,2],[0,3],[1,3],[2,3],[3,3],[4,3],[5,3],[6,3],[7,3],[8,3],[9,3],[10,3],[11,3]]},
-  {name:"最终决战",gold:400,lives:8,waves:[
-    {enemies:[{type:"boss",count:1},{type:"tank",count:6,interval:25}],reward:200},
-    {enemies:[{type:"fast",count:15,interval:12},{type:"tank",count:5,interval:20}],reward:250},
-    {enemies:[{type:"boss",count:2,interval:40},{type:"tank",count:8,interval:18}],reward:350},
-    {enemies:[{type:"fast",count:20,interval:10},{type:"tank",count:8,interval:15},{type:"boss",count:1}],reward:400},
-    {enemies:[{type:"boss",count:3,interval:35},{type:"tank",count:10,interval:15},{type:"fast",count:15,interval:10}],reward:600}
-  ],path:[[0,4],[1,4],[2,3],[3,3],[4,2],[5,2],[6,1],[7,1],[8,2],[9,2],[10,3],[11,3],[11,4],[10,5],[9,5],[8,6],[7,6],[6,7],[5,7],[4,6],[3,6],[2,5],[1,5],[0,4]]}
+  {name:"翠绿平原",gold:200,lives:20,path:[[0,5],[1,5],[2,5],[3,5],[4,5],[5,5],[6,5],[7,5],[8,5],[9,5],[10,5],[11,5],[12,5],[13,5]],
+   waves:[
+     [{t:"rat",n:8,iv:35}],
+     [{t:"rat",n:6,iv:28},{t:"rat",n:4,iv:35,delay:200}],
+     [{t:"rat",n:10,iv:25},{t:"rat",n:6,iv:30,delay:150}]
+   ]},
+  {name:"蜿蜒峡谷",gold:250,lives:15,path:[[0,3],[1,3],[2,3],[3,3],[3,4],[3,5],[3,6],[4,6],[5,6],[6,6],[7,6],[7,5],[7,4],[8,4],[9,4],[10,4],[11,4],[12,4],[13,4]],
+   waves:[
+     [{t:"rat",n:8,iv:28},{t:"wolf",n:4,iv:38}],
+     [{t:"wolf",n:8,iv:30},{t:"boar",n:3,iv:55}],
+     [{t:"wolf",n:6,iv:25},{t:"boar",n:5,iv:45},{t:"rat",n:8,iv:20}]
+   ]},
+  {name:"黑暗森林",gold:300,lives:12,path:[[0,6],[1,6],[2,6],[2,5],[2,4],[3,4],[4,4],[5,4],[6,4],[6,5],[6,6],[7,6],[8,6],[8,5],[8,4],[9,4],[10,4],[11,4],[12,4],[13,4]],
+   waves:[
+     [{t:"wolf",n:8,iv:26},{t:"boar",n:4,iv:48}],
+     [{t:"mage",n:5,iv:40},{t:"wolf",n:6,iv:28}],
+     [{t:"boar",n:6,iv:40},{t:"mage",n:6,iv:35},{t:"wolf",n:6,iv:22}]
+   ]},
+  {name:"熔岩之地",gold:350,lives:10,path:[[0,2],[1,2],[2,2],[3,2],[4,2],[5,2],[6,2],[6,3],[6,4],[6,5],[5,5],[4,5],[3,5],[2,5],[2,4],[2,3],[3,3],[4,3],[5,3],[6,3],[7,3],[8,3],[9,3],[10,3],[11,3],[12,3],[13,3]],
+   waves:[
+     [{t:"boar",n:6,iv:42},{t:"mage",n:5,iv:38}],
+     [{t:"dragon",n:1,iv:80},{t:"mage",n:6,iv:35}],
+     [{t:"dragon",n:2,iv:70},{t:"boar",n:6,iv:38},{t:"mage",n:6,iv:30}]
+   ]},
+  {name:"最终决战",gold:400,lives:8,path:[[0,4],[1,4],[1,3],[2,3],[2,2],[3,2],[3,1],[4,1],[4,2],[5,2],[5,3],[6,3],[6,4],[7,4],[7,5],[8,5],[8,6],[9,6],[9,5],[10,5],[10,4],[11,4],[12,4],[13,4]],
+   waves:[
+     [{t:"dragon",n:2,iv:65},{t:"mage",n:8,iv:30}],
+     [{t:"dragon",n:3,iv:55},{t:"boar",n:8,iv:32},{t:"mage",n:6,iv:28}],
+     [{t:"dragon",n:5,iv:50},{t:"mage",n:10,iv:25},{t:"boar",n:8,iv:28},{t:"wolf",n:10,iv:20}]
+   ]}
 ];
 
-// Game state
-var state={
-  currentLevel:0, gold:0, lives:0, kills:0,
-  wave:0, waveActive:false, speed:1,
-  towers:[], enemies:[], projectiles:[],
-  selectedTower:null, map:[], path:[], pathSet:null,
-  spawnQueue:[], spawnTimer:0, gameOver:false, gameWon:false
+// ===== STATE =====
+var G={
+  lvl:0, gold:0, lives:0, kills:0, wave:0, waveActive:false, gameOver:false, gameWon:false,
+  speed:1, selTower:-1, towers:[], enemies:[], projs:[], spawnQ:[], spawnT:0,
+  map:[], path:[], pathSet:new Set(), hoverC:-1, hoverR:-1,
+  cleared:JSON.parse(localStorage.getItem("td_cleared")||"[]")
 };
 
-// Enemy types
-var ENEMY_TYPES={
-  basic:{name:"小兵",hp:80,speed:1.2,reward:15,color:"#ef4444",size:8},
-  fast:{name:"快兵",hp:50,speed:2.5,reward:20,color:"#f97316",size:7},
-  tank:{name:"坦克",hp:250,speed:.7,reward:35,color:"#7c3aed",size:11},
-  boss:{name:"BOSS",hp:600,speed:.5,reward:100,color:"#dc2626",size:14}
-};
+function iso(x,y){return{x:(x-y)*TW/2+cvs.width/2-TW/2,y:(x+y)*TH/2+40}}
 
-// Isometric projection
-function iso(x,y){return{x:(x-y)*TILE_W/2+canvas.width/2-TILE_W/2,y:(x+y)*TILE_H/2+30}}
-
-// Sound effects
-function sfx(freq,dur,type,vol){
+// ===== AUDIO =====
+function sfx(f,d,t,v){
   try{var a=new(window.AudioContext||window.webkitAudioContext)(),o=a.createOscillator(),g=a.createGain();
-  o.type=type||'sine';o.frequency.value=freq;g.gain.setValueAtTime(vol||.08,a.currentTime);
-  g.gain.exponentialRampToValueAtTime(.001,a.currentTime+dur);o.connect(g);g.connect(a.destination);
-  o.start();o.stop(a.currentTime+dur)}catch(e){}
+  o.type=t||'sine';o.frequency.value=f;g.gain.setValueAtTime(v||.06,a.currentTime);
+  g.gain.exponentialRampToValueAtTime(.001,a.currentTime+d);o.connect(g);g.connect(a.destination);
+  o.start();o.stop(a.currentTime+d)}catch(e){}
 }
+function snd(k){switch(k){case"shoot":sfx(600,.06,'square',.05);break;case"boom":sfx(80,.15,'sawtooth',.08);break;
+case"coin":sfx(1200,.05,'sine',.05);setTimeout(function(){sfx(1600,.05,'sine',.05)},50);break;
+case"place":sfx(400,.08,'triangle',.06);break;case"wave":sfx(300,.12,'sine',.05);setTimeout(function(){sfx(500,.12,'sine',.05)},120);
+setTimeout(function(){sfx(700,.15,'sine',.07)},240);break;case"lose":sfx(120,.35,'sawtooth',.1);break;
+case"win":for(var i=0;i<5;i++)setTimeout(function(){var n=400+i*150;sfx(n,.1,'sine',.07)},i*100);break}}
 
-function sfxShoot(){sfx(600,.08,'square',.06)}
-function sfxExplosion(){sfx(80,.2,'sawtooth',.1)}
-function sfxCoin(){sfx(1200,.06,'sine',.06);setTimeout(function(){sfx(1600,.06,'sine',.06)},60)}
-function sfxPlace(){sfx(400,.1,'triangle',.08)}
-function sfxWaveStart(){sfx(300,.15,'sine',.06);setTimeout(function(){sfx(500,.15,'sine',.06)},150);setTimeout(function(){sfx(700,.2,'sine',.08)},300)}
-function sfxGameOver(){sfx(150,.4,'sawtooth',.12)}
-function sfxWin(){sfx(500,.1,'sine',.08);setTimeout(function(){sfx(700,.1,'sine',.08)},100);setTimeout(function(){sfx(900,.15,'sine',.1)},200);setTimeout(function(){sfx(1100,.2,'sine',.1)},300)}
-
-// Init level
-function initLevel(lvl){
-  var L=LEVELS[lvl];
-  state.currentLevel=lvl;state.gold=L.gold;state.lives=L.lives;state.kills=0;
-  state.wave=0;state.waveActive=false;state.gameOver=false;state.gameWon=false;
-  state.towers=[];state.enemies=[];state.projectiles=[];state.spawnQueue=[];
-  state.path=L.path;
-  state.pathSet=new Set();L.path.forEach(function(p){state.pathSet.add(p[0]+","+p[1])});
-  // Build map
-  state.map=[];for(var r=0;r<ROWS;r++){state.map[r]=[];for(var c=0;c<COLS;c++)state.map[r][c]=TILE_GRASS}
-  L.path.forEach(function(p,i){state.map[p[1]][p[0]]=i===0?TILE_START:i===L.path.length-1?TILE_END:TILE_PATH});
-  updateHUD();
-  document.getElementById("btnStart").textContent="▶ 开始波次";
-  document.getElementById("btnStart").disabled=false;
+// ===== INIT =====
+function initLevel(idx){
+  if(idx>=LEVELS.length)idx=LEVELS.length-1;
+  if(!G.cleared.includes(idx)&&idx>0&&!G.cleared.includes(idx-1))idx=Math.max(0,...G.cleared);
+  G.lvl=idx;var L=LEVELS[idx];
+  G.gold=L.gold;G.lives=L.lives;G.kills=0;G.wave=0;G.waveActive=false;G.gameOver=false;G.gameWon=false;
+  G.towers=[];G.enemies=[];G.projs=[];G.spawnQ=[];G.spawnT=0;G.speed=1;G.selTower=-1;
+  G.path=L.path;G.pathSet=new Set();L.path.forEach(function(p){G.pathSet.add(p[0]+","+p[1])});
+  G.map=[];for(var r=0;r<ROWS;r++){G.map[r]=[];for(var c=0;c<COLS;c++)G.map[r][c]=0}
+  updateHUD();updateTowerBtns();updateLevelBtns();
+  document.getElementById("btnWave").textContent="▶ 开始波次";document.getElementById("btnWave").disabled=false;
+  document.getElementById("btnSpeed").textContent="⏩ x1";
 }
 
 function updateHUD(){
-  document.getElementById("lives").textContent=state.lives;
-  document.getElementById("gold").textContent=state.gold;
-  document.getElementById("wave").textContent=state.wave+"/5";
-  document.getElementById("level").textContent=state.currentLevel+1;
-  document.getElementById("kills").textContent=state.kills;
+  document.getElementById("lives").textContent=G.lives;
+  document.getElementById("gold").textContent=G.gold;
+  document.getElementById("waveDisp").textContent=G.wave+"/"+LEVELS[G.lvl].waves.length;
+  document.getElementById("kills").textContent=G.kills;
+  document.getElementById("cleared").textContent=G.cleared.length>0?G.cleared.map(function(i){return i+1}).join(","):"-";
 }
 
-// Start wave
-function startWave(){
-  if(state.waveActive||state.gameOver||state.gameWon)return;
-  if(state.wave>=5){state.gameWon=true;sfxWin();document.getElementById("btnStart").textContent="🎉 通关!";document.getElementById("btnStart").disabled=true;return}
-  sfxWaveStart();
-  state.waveActive=true;state.spawnQueue=[];
-  var w=LEVELS[state.currentLevel].waves[state.wave];
-  w.enemies.forEach(function(eg){
-    for(var i=0;i<eg.count;i++)state.spawnQueue.push({type:eg.type,delay:(eg.interval||30)*(i+1)});
+function updateTowerBtns(){
+  var cont=document.getElementById("towerList");cont.innerHTML="";
+  TOWERS.forEach(function(td,i){
+    var unlocked=td.unlockLvl<=G.cleared.length;
+    var btn=document.createElement("button");
+    btn.className="td-tower-btn"+(unlocked?" unlocked":" locked")+(G.selTower===i?" selected":"");
+    btn.innerHTML='<div class="td-tower-icon" style="background:'+td.color+'20;color:'+td.color+'">'+td.icon+'</div><div class="td-tower-name">'+td.name+' '+(!unlocked?"🔒":"")+'</div><div class="td-tower-cost">💰'+td.cost+' | '+td.desc+'</div>';
+    if(unlocked)btn.addEventListener("click",function(){
+      document.querySelectorAll(".td-tower-btn").forEach(function(b){b.classList.remove("selected")});
+      btn.classList.add("selected");G.selTower=i;
+    });
+    cont.appendChild(btn);
   });
-  state.spawnQueue.sort(function(a,b){return a.delay-b.delay});
-  state.spawnTimer=0;
-  state.wave++;
-  updateHUD();
-  document.getElementById("btnStart").textContent="⏳ 波次进行中...";
-  document.getElementById("btnStart").disabled=true;
+}
+
+function updateLevelBtns(){
+  var cont=document.getElementById("levelBtns");cont.innerHTML="";
+  LEVELS.forEach(function(L,i){
+    var unlocked=i===0||G.cleared.includes(i-1);
+    var btn=document.createElement("button");
+    btn.className="lvl-btn"+(G.lvl===i?" active":"")+(!unlocked?" locked":"");
+    btn.textContent=(i+1)+"."+L.name+(unlocked?"":" 🔒");
+    if(unlocked)btn.addEventListener("click",function(){initLevel(i)});
+    cont.appendChild(btn);
+  });
+}
+
+// ===== WAVE =====
+function startWave(){
+  if(G.waveActive||G.gameOver||G.gameWon)return;
+  if(G.wave>=LEVELS[G.lvl].waves.length){G.gameWon=true;snd("win");document.getElementById("btnWave").textContent="🎉 通关!";document.getElementById("btnWave").disabled=true;
+    if(!G.cleared.includes(G.lvl)){G.cleared.push(G.lvl);G.cleared.sort(function(a,b){return a-b});localStorage.setItem("td_cleared",JSON.stringify(G.cleared));updateTowerBtns();updateLevelBtns()}
+    return}
+  snd("wave");G.waveActive=true;G.spawnQ=[];G.spawnT=0;
+  var w=LEVELS[G.lvl].waves[G.wave];
+  w.forEach(function(eg){for(var i=0;i<eg.n;i++)G.spawnQ.push({t:eg.t,delay:(eg.delay||0)+(eg.iv||30)*i})});
+  G.spawnQ.sort(function(a,b){return a.delay-b.delay});G.wave++;
+  updateHUD();document.getElementById("btnWave").textContent="⏳ ...";document.getElementById("btnWave").disabled=true;
 }
 
 function spawnEnemy(type){
-  var et=ENEMY_TYPES[type];
-  var start=state.path[0];
-  var e={type:type,x:start[0],y:start[1],pathIdx:0,hp:et.hp,maxHp:et.hp,speed:et.speed,
-    reward:et.reward,color:et.color,size:et.size,slow:0,alive:true};
-  if(type==="boss"){e.hp=et.hp+state.currentLevel*200;e.maxHp=e.hp}
-  state.enemies.push(e);
+  var et=ENEMIES.find(function(e){return e.id===type});if(!et)return;
+  var s=G.path[0];
+  G.enemies.push({type:type,x:s[0],y:s[1],pIdx:0,hp:et.hp,maxHp:et.hp,spd:et.spd,reward:et.reward,
+    color:et.color,size:et.size,shape:et.shape,alive:true,slow:0,heal:et.heal||0,fire:et.fire||0,anim:0});
 }
 
-// Update logic
+// ===== GAME LOOP =====
 function update(){
-  if(!state.waveActive||state.gameOver||state.gameWon)return;
-  for(var s=0;s<state.speed;s++){
-    // Spawn
-    state.spawnTimer++;
-    while(state.spawnQueue.length>0&&state.spawnQueue[0].delay<=state.spawnTimer)spawnEnemy(state.spawnQueue.shift().type);
+  if(!G.waveActive||G.gameOver||G.gameWon)return;
+  for(var s=0;s<G.speed;s++){
+    G.spawnT++;
+    while(G.spawnQ.length&&G.spawnQ[0].delay<=G.spawnT)spawnEnemy(G.spawnQ.shift().t);
 
-    // Move enemies
-    state.enemies.forEach(function(e){
+    // Enemies move toward home
+    var survivors=[];
+    G.enemies.forEach(function(e){
       if(!e.alive)return;
-      var sp=e.speed*(e.slow>0?0.4:1);
-      e.pathIdx+=sp*0.06;
-      if(e.pathIdx>=state.path.length-1){e.alive=false;state.lives--;updateHUD();if(state.lives<=0)endGame(false);return}
-      var i=Math.floor(e.pathIdx),f=e.pathIdx-i;
-      var p1=state.path[i],p2=state.path[Math.min(i+1,state.path.length-1)];
+      e.anim+=0.08;
+      var sp=e.spd*(e.slow>0?.35:1);
+      e.pIdx+=sp*0.04;
+      if(e.pIdx>=G.path.length-1){e.alive=false;G.lives--;updateHUD();if(G.lives<=0)endGame(false);return}
+      var i=Math.floor(e.pIdx),f=e.pIdx-i;
+      var p1=G.path[i],p2=G.path[Math.min(i+1,G.path.length-1)];
       e.x=p1[0]+(p2[0]-p1[0])*f;e.y=p1[1]+(p2[1]-p1[1])*f;
       if(e.slow>0)e.slow--;
+      if(e.heal>0&&Math.random()<.003){var nearby=G.enemies.filter(function(n){return n.alive&&n!==e&&Math.abs(n.x-e.x)<2&&Math.abs(n.y-e.y)<2});
+        nearby.forEach(function(n){n.hp=Math.min(n.maxHp,n.hp+e.heal)})}
+      if(e.fire>0&&Math.random()<.01)G.enemies.forEach(function(n){if(n.alive&&n!==e&&Math.abs(n.x-e.x)<1.5&&Math.abs(n.y-e.y)<1.5){n.hp-=5;n.slow=Math.max(n.slow||0,5)}});
+      survivors.push(e);
     });
-    state.enemies=state.enemies.filter(function(e){return e.alive});
+    G.enemies=survivors;
 
     // Towers attack
-    state.towers.forEach(function(t){
+    G.towers.forEach(function(t){
       if(t.cdLeft>0){t.cdLeft--;return}
-      var target=null,minDist=Infinity;
-      state.enemies.forEach(function(e){
-        var dx=e.x-t.x,dy=e.y-t.y,dist=Math.sqrt(dx*dx+dy*dy);
-        if(dist<t.range&&dist<minDist){minDist=dist;target=e}
-      });
+      var target=null,md=Infinity;
+      G.enemies.forEach(function(e){var dx=e.x-t.x,dy=e.y-t.y,d=Math.sqrt(dx*dx+dy*dy);if(d<t.range&&d<md){md=d;target=e}});
       if(!target)return;
-      t.cdLeft=t.cd;
-      var td=TOWER_TYPES.find(function(tt){return tt.id===t.type});
-      // Animate turret
-      var dx=target.x-t.x,dy=target.y-t.y;
-      t.angle=Math.atan2(dy,dx);
-      sfxShoot();
-      // Create projectile
-      state.projectiles.push({x:t.x,y:t.y,tx:target.x,ty:target.y,life:12,type:t.type,dmg:td.dmg*(1+t.level*.5),
-        splash:td.splash||0,slow:td.slow||0,chain:td.chain||0,target:target,hit:[]});
+      var td=TOWERS.find(function(tt){return tt.id===t.type});
+      t.cdLeft=t.cd;snd("shoot");
+      G.projs.push({x:t.x,y:t.y,tx:target.x,ty:target.y,life:14,type:t.type,dmg:td.dmg*(1+t.level*.5),
+        splash:td.splash,slow:td.slow,chain:td.chain,target:target,hit:[]});
     });
 
-    // Update projectiles
-    state.projectiles.forEach(function(p){
-      p.life--;var t=1-p.life/12;
-      p.cx=p.x+(p.tx-p.x)*t;p.cy=p.y+(p.ty-p.y)*t;
+    // Projectiles
+    var activeP=[];
+    G.projs.forEach(function(p){
+      p.life--;var r=1-p.life/14;p.cx=p.x+(p.tx-p.x)*r;p.cy=p.y+(p.ty-p.y)*r;
       if(p.life<=0){
-        // Damage target
-        if(p.target&&p.target.alive){
-          damageEnemy(p.target,p.dmg,p.slow);
-          sfxExplosion();
-          // Splash
-          if(p.splash>0)state.enemies.forEach(function(e){
-            if(e!==p.target&&e.alive){var dx=e.x-p.target.x,dy=e.y-p.target.y;if(Math.sqrt(dx*dx+dy*dy)<p.splash)damageEnemy(e,p.dmg*.4,p.slow)}
-          });
-          // Chain
-          if(p.chain>0){
-            var chainSrc=p.target,remaining=p.chain;
-            while(remaining>0){
-              var nearest=null,nd=Infinity;
-              state.enemies.forEach(function(e){if(e.alive&&e!==chainSrc&&!p.hit.includes(e)){var dx=e.x-chainSrc.x,dy=e.y-chainSrc.y,d=Math.sqrt(dx*dx+dy*dy);if(d<2&&d<nd){nd=d;nearest=e}}});
-              if(!nearest)break;
-              p.hit.push(nearest);damageEnemy(nearest,p.dmg*.5,p.slow);chainSrc=nearest;remaining--;
-            }
-          }
-        }
-      }
+        if(p.target&&p.target.alive){dmgEnemy(p.target,p.dmg,p.slow);snd("boom");
+          if(p.splash>0)G.enemies.forEach(function(e){if(e!==p.target&&e.alive&&Math.abs(e.x-p.target.x)<p.splash&&Math.abs(e.y-p.target.y)<p.splash)dmgEnemy(e,p.dmg*.35,p.slow)});
+          if(p.chain>0){var cs=p.target,rem=p.chain;while(rem>0){var nn=null,nd=Infinity;G.enemies.forEach(function(e){if(e.alive&&e!==cs&&!p.hit.includes(e)){var dx=e.x-cs.x,dy=e.y-cs.y,d=Math.abs(dx)+Math.abs(dy);if(d<2&&d<nd){nd=d;nn=e}}});if(!nn)break;p.hit.push(nn);dmgEnemy(nn,p.dmg*.45,p.slow);cs=nn;rem--}}}
+      }else activeP.push(p);
     });
-    state.projectiles=state.projectiles.filter(function(p){return p.life>0});
+    G.projs=activeP;
 
-    // Check wave complete
-    if(state.spawnQueue.length===0&&state.enemies.length===0&&state.projectiles.length===0){
-      state.waveActive=false;
-      state.gold+=LEVELS[state.currentLevel].waves[Math.min(state.wave-1,4)].reward;
-      updateHUD();
-      document.getElementById("btnStart").textContent=state.wave>=5?"🎉 通关!":"▶ 开始波次";
-      document.getElementById("btnStart").disabled=state.wave>=5;
-      sfxCoin();
-      if(state.wave>=5&&!state.gameOver){state.gameWon=true;sfxWin()}
+    // Wave complete?
+    if(!G.spawnQ.length&&!G.enemies.length&&!G.projs.length){
+      G.waveActive=false;G.gold+=50+G.wave*30;updateHUD();snd("coin");
+      document.getElementById("btnWave").textContent=G.wave>=LEVELS[G.lvl].waves.length?"🎉 通关!":"▶ 第"+(G.wave+1)+"波";
+      document.getElementById("btnWave").disabled=G.wave>=LEVELS[G.lvl].waves.length;
+      if(G.wave>=LEVELS[G.lvl].waves.length){G.gameWon=true;snd("win");
+        if(!G.cleared.includes(G.lvl)){G.cleared.push(G.lvl);G.cleared.sort(function(a,b){return a-b});localStorage.setItem("td_cleared",JSON.stringify(G.cleared));updateTowerBtns();updateLevelBtns()}}
     }
   }
 }
 
-function damageEnemy(e,dmg,slow){
-  e.hp-=dmg;
-  if(slow>0)e.slow=Math.max(e.slow,60);
-  if(e.hp<=0){e.alive=false;state.gold+=e.reward;state.kills++;updateHUD();sfxCoin()}
-}
+function dmgEnemy(e,dmg,slow){e.hp-=dmg;if(slow>0)e.slow=Math.max(e.slow||0,slow);if(e.hp<=0&&e.alive){e.alive=false;G.gold+=e.reward;G.kills++;updateHUD();snd("coin")}}
 
 function endGame(won){
-  state.gameOver=!won;state.waveActive=false;
-  if(!won){sfxGameOver();document.getElementById("btnStart").textContent="😵 重新开始";document.getElementById("btnStart").disabled=false}
-  document.getElementById("btnStart").onclick=function(){initLevel(state.currentLevel)}
+  G.gameOver=!won;G.waveActive=false;snd("lose");document.getElementById("btnWave").textContent="😵 重试";document.getElementById("btnWave").disabled=false;
+  document.getElementById("btnWave").onclick=function(){initLevel(G.lvl)}
 }
 
-// Place tower
-function placeTower(col,row){
-  if(!state.selectedTower)return;
-  if(state.pathSet.has(col+","+row))return;
-  if(state.towers.find(function(t){return t.x===col&&t.y===row}))return;
-  var td=TOWER_TYPES[state.selectedTower];
-  if(state.gold<td.cost)return;
-  state.gold-=td.cost;
-  state.towers.push({type:td.id,x:col,y:row,level:1,cd:td.cd,cdLeft:0,range:td.range,angle:0});
-  updateHUD();
-  sfxPlace();
+// ===== PLACEMENT =====
+function placeTower(c,r){
+  if(G.selTower<0||G.selTower>=TOWERS.length)return;
+  if(G.pathSet.has(c+","+r))return;
+  if(G.towers.find(function(t){return t.x===c&&t.y===r}))return;
+  var td=TOWERS[G.selTower];if(G.gold<td.cost)return;
+  G.gold-=td.cost;G.towers.push({type:td.id,x:c,y:r,level:1,cd:td.cd,cdLeft:0,range:td.range,angle:0});
+  updateHUD();snd("place");
 }
 
-// Upgrade tower
-function upgradeTower(col,row){
-  var t=state.towers.find(function(t){return t.x===col&&t.y===row});
-  if(!t||t.level>=3)return;
-  var td=TOWER_TYPES.find(function(tt){return tt.id===t.type});
-  var cost=td.cost*(t.level+1);
-  if(state.gold<cost)return;
-  state.gold-=cost;t.level++;t.range+=.3;t.cd=Math.max(10,td.cd-5);
-  updateHUD();sfxPlace();
+function upgradeTower(c,r){
+  var t=G.towers.find(function(t){return t.x===c&&t.y===r});if(!t||t.level>=3)return;
+  var td=TOWERS.find(function(tt){return tt.id===t.type});var cost=td.cost*(t.level+1);if(G.gold<cost)return;
+  G.gold-=cost;t.level++;t.range+=.25;t.cd=Math.max(12,td.cd-6);updateHUD();snd("place");
 }
 
-// Render
+// ===== RENDER =====
+function drawShape(ctx,x,y,size,shape,anim){
+  ctx.save();ctx.translate(x,y);if(shape==="star")ctx.rotate(anim*.5);
+  ctx.beginPath();
+  switch(shape){
+    case"circle":ctx.arc(0,0,size,0,Math.PI*2);break;
+    case"diamond":ctx.moveTo(0,-size);ctx.lineTo(size,0);ctx.lineTo(0,size);ctx.lineTo(-size,0);break;
+    case"hex":for(var i=0;i<6;i++){var a=Math.PI/6+i*Math.PI/3;ctx.lineTo(Math.cos(a)*size,Math.sin(a)*size)}break;
+    case"star":for(var i=0;i<10;i++){var a=-Math.PI/2+i*Math.PI/5,r=i%2?size*.4:size;ctx.lineTo(Math.cos(a)*r,Math.sin(a)*r)}break;
+    case"pentagon":for(var i=0;i<5;i++){var a=-Math.PI/2+i*Math.PI*2.5;ctx.lineTo(Math.cos(a)*size,Math.sin(a)*size)}break;
+    default:ctx.arc(0,0,size,0,Math.PI*2);
+  }
+  ctx.closePath();ctx.fill();ctx.restore();
+}
+
 function draw(){
-  ctx.clearRect(0,0,canvas.width,canvas.height);
+  ctx.clearRect(0,0,cvs.width,cvs.height);
+  // Sky
+  var sky=ctx.createLinearGradient(0,0,0,cvs.height);
+  sky.addColorStop(0,"#1e1b4b");sky.addColorStop(.4,"#312e81");sky.addColorStop(1,"#1e3a5f");
+  ctx.fillStyle=sky;ctx.fillRect(0,0,cvs.width,cvs.height);
 
-  // Sky gradient
-  var sky=ctx.createLinearGradient(0,0,0,canvas.height);
-  sky.addColorStop(0,"#1a1a2e");sky.addColorStop(.4,"#16213e");sky.addColorStop(1,"#0f3460");
-  ctx.fillStyle=sky;ctx.fillRect(0,0,canvas.width,canvas.height);
-
-  // Draw tiles
-  for(var r=ROWS-1;r>=0;r--){
-    for(var c=0;c<COLS;c++){
-      var p=iso(c,r);
-      // Tile base
-      var isPath=state.pathSet.has(c+","+r);
-      var isStart=state.map[r][c]===TILE_START,isEnd=state.map[r][c]===TILE_END;
-
-      // Shadow
-      ctx.fillStyle="rgba(0,0,0,.2)";
-      ctx.beginPath();ctx.moveTo(p.x,p.y+TILE_H/2);ctx.lineTo(p.x+TILE_W/2,p.y+TILE_H);ctx.lineTo(p.x+TILE_W,p.y+TILE_H/2);ctx.lineTo(p.x+TILE_W/2,p.y);ctx.fill();
-
-      // Top face
-      if(isPath){var pg=ctx.createLinearGradient(p.x,p.y,p.x+TILE_W,p.y+TILE_H);
-        pg.addColorStop(0,"#c4a97d");pg.addColorStop(1,"#a0845c");ctx.fillStyle=pg}
-      else{var pg=ctx.createLinearGradient(p.x,p.y,p.x+TILE_W,p.y+TILE_H);
-        pg.addColorStop(0,"#4a7c59");pg.addColorStop(1,"#3d6b4f");ctx.fillStyle=pg}
-      ctx.beginPath();ctx.moveTo(p.x,p.y);ctx.lineTo(p.x+TILE_W/2,p.y+TILE_H/2);ctx.lineTo(p.x+TILE_W,p.y);ctx.lineTo(p.x+TILE_W/2,p.y-TILE_H/2);ctx.fill();
-
-      // Left face
-      ctx.fillStyle=isPath?"#8b7355":"#2d5a3f";
-      ctx.beginPath();ctx.moveTo(p.x,p.y);ctx.lineTo(p.x+TILE_W/2,p.y+TILE_H/2);ctx.lineTo(p.x+TILE_W/2,p.y+TILE_H/2+10);ctx.lineTo(p.x,p.y+10);ctx.fill();
-
-      // Right face
-      ctx.fillStyle=isPath?"#6b5a42":"#1e4730";
-      ctx.beginPath();ctx.moveTo(p.x+TILE_W,p.y);ctx.lineTo(p.x+TILE_W/2,p.y+TILE_H/2);ctx.lineTo(p.x+TILE_W/2,p.y+TILE_H/2+10);ctx.lineTo(p.x+TILE_W,p.y+10);ctx.fill();
-
-      // Start/End markers
-      if(isStart){ctx.fillStyle="#10b981";ctx.beginPath();ctx.arc(p.x+TILE_W/2,p.y-4,6,0,Math.PI*2);ctx.fill()}
-      if(isEnd){ctx.fillStyle="#ef4444";ctx.beginPath();ctx.arc(p.x+TILE_W/2,p.y-4,6,0,Math.PI*2);ctx.fill()}
-    }
-  }
-
-  // Draw towers
-  state.towers.forEach(function(t){
-    var p=iso(t.x,t.y);
-    var td=TOWER_TYPES.find(function(tt){return tt.id===t.type});
-    // Base
-    var h=16+t.level*6;
-    ctx.fillStyle="#555";ctx.beginPath();ctx.ellipse(p.x+TILE_W/2,p.y,h*.4,h*.15,0,0,Math.PI*2);ctx.fill();
-    // Body - stacked ellipses for 3D
-    for(var i=h;i>=4;i-=4){
-      ctx.fillStyle=i>h/2?td.color:lighten(td.color,.3);
-      ctx.beginPath();ctx.ellipse(p.x+TILE_W/2,p.y-i,h*.35,h*.12,0,0,Math.PI*2);ctx.fill();
-    }
-    // Top dome
-    ctx.fillStyle=td.color;ctx.beginPath();ctx.ellipse(p.x+TILE_W/2,p.y-h-3,6,3,0,0,Math.PI*2);ctx.fill();
-    // Level indicator
-    ctx.fillStyle="#fff";ctx.font="bold 10px sans-serif";ctx.textAlign="center";
-    ctx.fillText("Lv"+t.level,p.x+TILE_W/2,p.y-h-8);
-    // Range indicator for selected
-    if(state.selectedTower!==null&&t.x===state.hoverCol&&t.y===state.hoverRow){
-      ctx.strokeStyle="rgba(255,255,255,.3)";ctx.lineWidth=1;ctx.setLineDash([4,4]);
-      ctx.beginPath();ctx.arc(p.x+TILE_W/2,p.y-h/2,t.range*TILE_W/2.5,0,Math.PI*2);ctx.stroke();ctx.setLineDash([]);
-    }
-  });
-
-  // Draw enemies
-  state.enemies.forEach(function(e){
-    var p=iso(e.x,e.y);
+  // Tiles (back to front)
+  for(var r=ROWS-1;r>=0;r--)for(var c=0;c<COLS;c++){
+    var p=iso(c,r),isPath=G.pathSet.has(c+","+r);
+    var isStart=G.path[0][0]===c&&G.path[0][1]===r,isEnd=G.path[G.path.length-1][0]===c&&G.path[G.path.length-1][1]===r;
     // Shadow
-    ctx.fillStyle="rgba(0,0,0,.3)";ctx.beginPath();ctx.ellipse(p.x+TILE_W/2,p.y,e.size,e.size*.4,0,0,Math.PI*2);ctx.fill();
+    ctx.fillStyle="rgba(0,0,0,.25)";ctx.beginPath();ctx.moveTo(p.x,p.y+TH/2);ctx.lineTo(p.x+TW/2,p.y+TH);ctx.lineTo(p.x+TW,p.y+TH/2);ctx.lineTo(p.x+TW/2,p.y);ctx.fill();
+    // Top
+    ctx.fillStyle=isPath?"#a0845c":"#4a7c59";
+    ctx.beginPath();ctx.moveTo(p.x,p.y);ctx.lineTo(p.x+TW/2,p.y+TH/2);ctx.lineTo(p.x+TW,p.y);ctx.lineTo(p.x+TW/2,p.y-TH/2);ctx.fill();
+    // Left face
+    ctx.fillStyle=isPath?"#7a6340":"#2d5a3f";ctx.beginPath();ctx.moveTo(p.x,p.y);ctx.lineTo(p.x+TW/2,p.y+TH/2);ctx.lineTo(p.x+TW/2,p.y+TH/2+8);ctx.lineTo(p.x,p.y+8);ctx.fill();
+    // Right face
+    ctx.fillStyle=isPath?"#5c4a30":"#1e4730";ctx.beginPath();ctx.moveTo(p.x+TW,p.y);ctx.lineTo(p.x+TW/2,p.y+TH/2);ctx.lineTo(p.x+TW/2,p.y+TH/2+8);ctx.lineTo(p.x+TW,p.y+8);ctx.fill();
+    // Start portal (enemy spawn)
+    if(isStart){ctx.fillStyle="#8b5cf6";ctx.shadowColor="#8b5cf6";ctx.shadowBlur=10;ctx.beginPath();ctx.arc(p.x+TW/2,p.y-5,7,0,Math.PI*2);ctx.fill();ctx.shadowBlur=0;ctx.fillStyle="#fff";ctx.font="7px sans-serif";ctx.textAlign="center";ctx.fillText("敌",p.x+TW/2,p.y-2)}
+    // End base (home)
+    if(isEnd){ctx.fillStyle="#10b981";ctx.shadowColor="#10b981";ctx.shadowBlur=12;ctx.beginPath();ctx.arc(p.x+TW/2,p.y-5,8,0,Math.PI*2);ctx.fill();ctx.shadowBlur=0;ctx.fillStyle="#fff";ctx.font="7px sans-serif";ctx.textAlign="center";ctx.fillText("家",p.x+TW/2,p.y-2)}
+    // Path markers
+    if(isPath&&!isStart&&!isEnd){ctx.fillStyle="rgba(255,255,255,.06)";ctx.beginPath();ctx.arc(p.x+TW/2,p.y,4,0,Math.PI*2);ctx.fill()}
+  }
+
+  // Towers
+  G.towers.forEach(function(t){
+    var p=iso(t.x,t.y),td=TOWERS.find(function(tt){return tt.id===t.type});
+    var h=14+t.level*5;
+    // Base shadow
+    ctx.fillStyle="rgba(0,0,0,.3)";ctx.beginPath();ctx.ellipse(p.x+TW/2,p.y,h*.4,h*.15,0,0,Math.PI*2);ctx.fill();
     // Body
-    var h=e.size*1.5;
-    ctx.fillStyle=e.color;
-    ctx.beginPath();ctx.ellipse(p.x+TILE_W/2,p.y-h,e.size*.8,e.size*.4,0,0,Math.PI*2);ctx.fill();
-    // Head
-    ctx.beginPath();ctx.ellipse(p.x+TILE_W/2,p.y-h-e.size*.5,e.size*.6,e.size*.3,0,0,Math.PI*2);ctx.fill();
-    // HP bar
-    if(e.hp<e.maxHp){
-      var bw=e.size*2,bh=4,bx=p.x+TILE_W/2-bw/2,by=p.y-h-e.size-bh-4;
-      ctx.fillStyle="#333";ctx.fillRect(bx,by,bw,bh);
-      ctx.fillStyle=e.hp/e.maxHp>.5?"#10b981":e.hp/e.maxHp>.25?"#f59e0b":"#ef4444";
-      ctx.fillRect(bx,by,bw*(e.hp/e.maxHp),bh);
+    for(var i=h;i>=4;i-=4){
+      var ratio=i/h;ctx.fillStyle=ratio>.5?td.color:lighten(td.color,.25);
+      ctx.beginPath();ctx.ellipse(p.x+TW/2,p.y-i,h*.3,h*.1,0,0,Math.PI*2);ctx.fill();
     }
-    // Slow indicator
-    if(e.slow>0){ctx.fillStyle="rgba(59,130,246,.4)";ctx.beginPath();ctx.arc(p.x+TILE_W/2,p.y-h,8,0,Math.PI*2);ctx.fill()}
+    // Dome
+    ctx.fillStyle=td.color;ctx.beginPath();ctx.ellipse(p.x+TW/2,p.y-h-2,5,2.5,0,0,Math.PI*2);ctx.fill();
+    // Lv badge
+    ctx.fillStyle="#fff";ctx.font="bold 8px sans-serif";ctx.textAlign="center";ctx.fillText("Lv"+t.level,p.x+TW/2,p.y-h-6);
   });
 
-  // Draw projectiles
-  state.projectiles.forEach(function(p){
-    var pp=iso(p.cx,p.cy);
-    var td=TOWER_TYPES.find(function(tt){return tt.id===p.type});
-    ctx.fillStyle=td.color;ctx.shadowColor=td.color;ctx.shadowBlur=6;
-    ctx.beginPath();ctx.arc(pp.x+TILE_W/2,pp.y-6,3,0,Math.PI*2);ctx.fill();
-    ctx.shadowBlur=0;
+  // Enemies
+  G.enemies.forEach(function(e){
+    var p=iso(e.x,e.y),et=ENEMIES.find(function(ee){return ee.id===e.type});
+    var h=e.size*1.4,yscale=e.slow>0?.6:1;
+    // Shadow
+    ctx.fillStyle="rgba(0,0,0,.35)";ctx.beginPath();ctx.ellipse(p.x+TW/2,p.y+2,e.size*.7,e.size*.25,0,0,Math.PI*2);ctx.fill();
+    // Body
+    ctx.fillStyle=e.color;ctx.save();ctx.scale(1,yscale);
+    drawShape(ctx,p.x+TW/2,p.y-h/yscale,e.size*.7,e.shape,e.anim);
+    ctx.restore();
+    // Eyes
+    ctx.fillStyle="#fff";ctx.beginPath();ctx.arc(p.x+TW/2+e.size*.25,p.y-h-e.size*.2,2,0,Math.PI*2);ctx.fill();
+    ctx.fillStyle="#111";ctx.beginPath();ctx.arc(p.x+TW/2+e.size*.3,p.y-h-e.size*.2,1,0,Math.PI*2);ctx.fill();
+    // HP bar
+    if(e.hp<e.maxHp){var bw=e.size*1.6,bh=3,bx=p.x+TW/2-bw/2,by=p.y-h-e.size*.5-6;
+      ctx.fillStyle="#222";ctx.fillRect(bx,by,bw,bh);ctx.fillStyle=e.hp/e.maxHp>.5?"#10b981":e.hp/e.maxHp>.25?"#f59e0b":"#ef4444";ctx.fillRect(bx,by,bw*(e.hp/e.maxHp),bh)}
+    // Slow
+    if(e.slow>0){ctx.strokeStyle="rgba(59,130,246,.5)";ctx.lineWidth=1.5;ctx.beginPath();ctx.arc(p.x+TW/2,p.y-h,e.size+3,0,Math.PI*2);ctx.stroke()}
   });
 
-  // Draw hover placement
-  if(state.selectedTower!==null&&state.hoverCol!==undefined&&state.hoverRow!==undefined){
-    var hp=iso(state.hoverCol,state.hoverRow);
-    var canPlace=!state.pathSet.has(state.hoverCol+","+state.hoverRow)&&!state.towers.find(function(t){return t.x===state.hoverCol&&t.y===state.hoverRow});
-    ctx.fillStyle=canPlace?"rgba(16,185,129,.3)":"rgba(239,68,68,.3)";
-    ctx.beginPath();ctx.moveTo(hp.x,hp.y);ctx.lineTo(hp.x+TILE_W/2,hp.y+TILE_H/2);ctx.lineTo(hp.x+TILE_W,hp.y);ctx.lineTo(hp.x+TILE_W/2,hp.y-TILE_H/2);ctx.fill();
+  // Projectiles
+  G.projs.forEach(function(p){
+    var pp=iso(p.cx,p.cy),td=TOWERS.find(function(tt){return tt.id===p.type});
+    ctx.fillStyle=td.color;ctx.shadowColor=td.color;ctx.shadowBlur=5;
+    ctx.beginPath();ctx.arc(pp.x+TW/2,pp.y-4,2.5,0,Math.PI*2);ctx.fill();ctx.shadowBlur=0;
+  });
+
+  // Hover placement
+  if(G.selTower>=0&&G.hoverC>=0&&G.hoverR>=0){
+    var hp=iso(G.hoverC,G.hoverR);
+    var can=!G.pathSet.has(G.hoverC+","+G.hoverR)&&!G.towers.find(function(t){return t.x===G.hoverC&&t.y===G.hoverR});
+    ctx.fillStyle=can?"rgba(16,185,129,.25)":"rgba(239,68,68,.2)";
+    ctx.beginPath();ctx.moveTo(hp.x,hp.y);ctx.lineTo(hp.x+TW/2,hp.y+TH/2);ctx.lineTo(hp.x+TW,hp.y);ctx.lineTo(hp.x+TW/2,hp.y-TH/2);ctx.fill();
   }
 
-  // Game over overlay
-  if(state.gameOver){
-    ctx.fillStyle="rgba(0,0,0,.7)";ctx.fillRect(0,0,canvas.width,canvas.height);
-    ctx.fillStyle="#ff6b6b";ctx.font="bold 36px sans-serif";ctx.textAlign="center";ctx.fillText("💔 游戏结束",canvas.width/2,canvas.height/2-20);
-    ctx.fillStyle="#fff";ctx.font="16px sans-serif";ctx.fillText("点击按钮重新开始",canvas.width/2,canvas.height/2+30);
+  // Overlays
+  if(G.gameOver){
+    ctx.fillStyle="rgba(0,0,0,.75)";ctx.fillRect(0,0,cvs.width,cvs.height);
+    ctx.fillStyle="#ff6b6b";ctx.font="bold 32px sans-serif";ctx.textAlign="center";ctx.fillText("💔 家园失守",cvs.width/2,cvs.height/2-15);
+    ctx.fillStyle="#fff";ctx.font="15px sans-serif";ctx.fillText("点击按钮重试",cvs.width/2,cvs.height/2+25);
   }
-  if(state.gameWon){
-    ctx.fillStyle="rgba(0,0,0,.6)";ctx.fillRect(0,0,canvas.width,canvas.height);
-    ctx.fillStyle="#fbbf24";ctx.font="bold 36px sans-serif";ctx.textAlign="center";ctx.fillText("🏆 恭喜通关!",canvas.width/2,canvas.height/2-20);
-    ctx.fillStyle="#fff";ctx.font="16px sans-serif";ctx.fillText("击杀: "+state.kills+" | 剩余生命: "+state.lives,canvas.width/2,canvas.height/2+30);
+  if(G.gameWon){
+    ctx.fillStyle="rgba(0,0,0,.65)";ctx.fillRect(0,0,cvs.width,cvs.height);
+    ctx.fillStyle="#fbbf24";ctx.font="bold 32px sans-serif";ctx.textAlign="center";ctx.fillText("🏆 胜利!",cvs.width/2,cvs.height/2-15);
+    ctx.fillStyle="#fff";ctx.font="15px sans-serif";ctx.fillText("击杀:"+G.kills+" | ❤️:"+G.lives,cvs.width/2,cvs.height/2+25);
   }
 }
 
-function lighten(hex,amt){var c=parseInt(hex.slice(1),16);var r=Math.min(255,(c>>16)+60),g=Math.min(255,((c>>8)&255)+60),b=Math.min(255,(c&255)+60);return"rgb("+r+","+g+","+b+")"}
+function lighten(hex,amt){var c=parseInt(hex.slice(1),16);return"rgb("+Math.min(255,(c>>16)+50)+","+Math.min(255,((c>>8)&255)+50)+","+Math.min(255,(c&255)+50)+")"}
 
-// Mouse interaction
-canvas.addEventListener("mousemove",function(e){
-  var rect=canvas.getBoundingClientRect();
-  var mx=e.clientX-rect.left,my=e.clientY-rect.top;
-  // Reverse isometric
-  var closest=null,cd=Infinity;
-  for(var r=0;r<ROWS;r++)for(var c=0;c<COLS;c++){
-    var p=iso(c,r);var dx=mx-p.x-TILE_W/2,dy=my-p.y;var d=Math.abs(dx)+Math.abs(dy);
-    if(d<cd){cd=d;closest={c:c,r:r}}
-  }
-  if(closest&&cd<TILE_W/2){state.hoverCol=closest.c;state.hoverRow=closest.r}else{state.hoverCol=undefined;state.hoverRow=undefined}
+// ===== INPUT =====
+cvs.addEventListener("mousemove",function(e){
+  var rect=cvs.getBoundingClientRect(),mx=e.clientX-rect.left,my=e.clientY-rect.top,cd=Infinity;
+  for(var r=0;r<ROWS;r++)for(var c=0;c<COLS;c++){var p=iso(c,r),dx=mx-p.x-TW/2,dy=my-p.y,d=Math.abs(dx)+Math.abs(dy);if(d<cd){cd=d;G.hoverC=c;G.hoverR=r}}
+  if(cd>TW/2){G.hoverC=-1;G.hoverR=-1}
+});
+cvs.addEventListener("click",function(){
+  if(G.gameOver||G.gameWon||G.hoverC<0)return;
+  var c=G.hoverC,r=G.hoverR,ex=G.towers.find(function(t){return t.x===c&&t.y===r});
+  ex?upgradeTower(c,r):placeTower(c,r);
 });
 
-canvas.addEventListener("click",function(e){
-  if(state.gameOver||state.gameWon)return;
-  if(state.hoverCol===undefined)return;
-  var c=state.hoverCol,r=state.hoverRow;
-  var existing=state.towers.find(function(t){return t.x===c&&t.y===r});
-  if(existing){upgradeTower(c,r)}else{placeTower(c,r)}
-});
-
-// Tower selection
-TOWER_TYPES.forEach(function(td,i){
-  var btn=document.createElement("button");
-  btn.className="td-tower-btn";if(i===0)btn.classList.add("selected");
-  btn.innerHTML='<div class="td-tower-icon" style="background:'+td.color+'20;color:'+td.color+'">'+td.icon+'</div><div class="td-tower-info"><div class="td-tower-name">'+td.name+'</div><div class="td-tower-cost">💰'+td.cost+' | '+td.desc+'</div></div>';
-  btn.addEventListener("click",function(){
-    document.querySelectorAll(".td-tower-btn").forEach(function(b){b.classList.remove("selected")});
-    btn.classList.add("selected");
-    state.selectedTower=i;
-  });
-  document.getElementById("towerList").appendChild(btn);
-});
-state.selectedTower=0;
-
-// Buttons
-document.getElementById("btnStart").addEventListener("click",startWave);
-document.getElementById("btnSpeed").addEventListener("click",function(){
-  state.speed=state.speed===1?2:state.speed===2?3:1;
-  this.textContent="⏩ x"+state.speed;
-});
+document.getElementById("btnWave").addEventListener("click",startWave);
+document.getElementById("btnSpeed").addEventListener("click",function(){G.speed=G.speed===1?2:G.speed===2?3:1;this.textContent="⏩ x"+G.speed});
 document.getElementById("btnSave").addEventListener("click",function(){
-  var save={level:state.currentLevel,gold:state.gold,lives:state.lives,kills:state.kills,wave:state.wave-1};
-  localStorage.setItem("td_save",JSON.stringify(save));
-  alert("💾 已存档！");
-});
+  var sv={lvl:G.lvl,gold:G.gold,lives:G.lives,kills:G.kills,wave:G.wave,cleared:G.cleared};localStorage.setItem("td_save",JSON.stringify(sv));alert("💾 已存档!")});
 document.getElementById("btnLoad").addEventListener("click",function(){
-  var save=localStorage.getItem("td_save");
-  if(!save){alert("没有存档");return}
-  var s=JSON.parse(save);
-  initLevel(s.level);
-  state.gold=s.gold;state.lives=s.lives;state.kills=s.kills;state.wave=s.wave;
-  updateHUD();
-  alert("📂 已读档！(塔需要重新建造)");
-});
+  var sv=localStorage.getItem("td_save");if(!sv){alert("无存档");return}
+  var s=JSON.parse(sv);G.cleared=s.cleared||[];localStorage.setItem("td_cleared",JSON.stringify(G.cleared));initLevel(s.lvl);
+  G.gold=s.gold;G.lives=s.lives;G.kills=s.kills;G.wave=s.wave;updateHUD();alert("📂 已读档")});
 
-// Game loop
-function gameLoop(){update();draw();requestAnimationFrame(gameLoop)}
+function loop(){update();draw();requestAnimationFrame(loop)}
 initLevel(0);
-gameLoop();
+updateTowerBtns();updateLevelBtns();
+loop();
 })();
 </script>
 </body>
