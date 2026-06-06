@@ -1,8 +1,8 @@
-﻿/* ===== 在线工具箱 - 全局样式 ===== */
+/* ===== 在线工具箱 - 全局样式 ===== */
 :root {
-  --bg: #f8fafc;
-  --surface: #ffffff;
-  --surface-hover: #f1f5f9;
+  --bg: linear-gradient(135deg, #e8f0fe 0%, #f0f4ff 30%, #eef2ff 60%, #e0e7ff 100%);
+  --surface: rgba(255,255,255,.85);
+  --surface-hover: rgba(255,255,255,.95);
   --border: #e2e8f0;
   --text: #1e293b;
   --text-secondary: #64748b;
@@ -25,7 +25,7 @@
 
 body {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans SC", sans-serif;
-  background: var(--bg);
+  background: var(--bg); background-attachment: fixed;
   color: var(--text);
   line-height: 1.6;
   min-height: 100vh;
@@ -156,7 +156,7 @@ textarea, input[type="text"], input[type="url"], input[type="number"], select {
   border-radius: var(--radius-sm);
   font-size: .95rem;
   font-family: "SF Mono", "Fira Code", "Consolas", monospace;
-  background: var(--bg);
+  background: var(--bg); background-attachment: fixed;
   color: var(--text);
   transition: border-color .2s;
   outline: none;
@@ -177,7 +177,7 @@ textarea { min-height: 200px; }
 }
 .btn-primary { background: var(--primary); color: white; }
 .btn-primary:hover { background: var(--primary-hover); transform: translateY(-1px); box-shadow: var(--shadow-md); }
-.btn-secondary { background: var(--bg); color: var(--text); border: 1px solid var(--border); }
+.btn-secondary { background: var(--bg); background-attachment: fixed; color: var(--text); border: 1px solid var(--border); }
 .btn-secondary:hover { background: var(--surface-hover); }
 .btn-sm { padding: 6px 14px; font-size: .82rem; }
 .btn-group { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 16px; }
@@ -185,7 +185,7 @@ textarea { min-height: 200px; }
 /* Results */
 .result-area {
   margin-top: 20px;
-  background: var(--bg);
+  background: var(--bg); background-attachment: fixed;
   border: 1px solid var(--border);
   border-radius: var(--radius-sm);
   padding: 16px;
@@ -220,7 +220,7 @@ textarea { min-height: 200px; }
 
 /* Ad Slot */
 .ad-slot {
-  background: var(--bg);
+  background: var(--bg); background-attachment: fixed;
   border: 1px dashed var(--border);
   border-radius: var(--radius-sm);
   min-height: 90px;
@@ -252,11 +252,11 @@ textarea { min-height: 200px; }
 
 /* Tool-specific */
 .color-preview { width: 100%; height: 60px; border-radius: var(--radius-sm); margin-top: 12px; transition: background .2s; }
-.password-display { font-size: 1.4rem; font-weight: 700; font-family: "SF Mono", "Consolas", monospace; letter-spacing: 2px; padding: 16px; text-align: center; background: var(--bg); border-radius: var(--radius-sm); word-break: break-all; }
+.password-display { font-size: 1.4rem; font-weight: 700; font-family: "SF Mono", "Consolas", monospace; letter-spacing: 2px; padding: 16px; text-align: center; background: var(--bg); background-attachment: fixed; border-radius: var(--radius-sm); word-break: break-all; }
 .qr-wrap { text-align: center; padding: 20px; }
 .qr-wrap canvas, .qr-wrap img { max-width: 256px; }
 .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 12px; margin-top: 16px; }
-.stat-card { background: var(--bg); padding: 14px; border-radius: var(--radius-sm); text-align: center; }
+.stat-card { background: var(--bg); background-attachment: fixed; padding: 14px; border-radius: var(--radius-sm); text-align: center; }
 .stat-card .num { font-size: 1.5rem; font-weight: 700; color: var(--primary); }
 .stat-card .lbl { font-size: .78rem; color: var(--text-secondary); margin-top: 2px; }
 .diff-container { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
