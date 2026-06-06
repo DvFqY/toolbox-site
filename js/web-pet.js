@@ -1,204 +1,193 @@
-// Webpage Pet v3 - cute pixel cat, draggable
+// Webpage Pet v4 - smooth vector cat, fully draggable
 (function(){
   if (window.__petLoaded) return;
   window.__petLoaded = true;
 
   var container = document.createElement('div');
   container.id = 'webPet';
-  container.style.cssText = 'position:fixed;bottom:80px;left:20px;z-index:9998;cursor:grab;user-select:none;';
+  container.style.cssText = 'position:fixed;bottom:80px;left:20px;z-index:9998;cursor:grab;user-select:none;touch-action:none';
 
   var canvas = document.createElement('canvas');
-  canvas.width = 120; canvas.height = 120;
-  canvas.style.cssText = 'width:80px;height:80px;image-rendering:pixelated;transition:transform .25s;pointer-events:none';
+  canvas.width = 140; canvas.height = 140;
+  canvas.style.cssText = 'width:85px;height:85px;display:block';
   container.appendChild(canvas);
 
   var bubble = document.createElement('div');
   bubble.id = 'petBubble';
-  bubble.style.cssText = 'position:absolute;top:-34px;left:50%;transform:translateX(-50%);background:var(--surface,#fff);border:1px solid var(--border);border-radius:10px;padding:3px 10px;font-size:.7rem;white-space:nowrap;opacity:0;transition:opacity .3s;pointer-events:none;box-shadow:0 2px 8px rgba(0,0,0,.1)';
+  bubble.style.cssText = 'position:absolute;top:-36px;left:50%;transform:translateX(-50%);background:var(--surface,#fff);color:var(--text);border:1px solid var(--border);border-radius:10px;padding:3px 12px;font-size:.72rem;white-space:nowrap;opacity:0;transition:opacity .3s;pointer-events:none;box-shadow:0 2px 8px rgba(0,0,0,.12)';
   container.appendChild(bubble);
   document.body.appendChild(container);
 
   var ctx = canvas.getContext('2d');
-  var frame = 0, isBlinking = false, blinkF = 0, tailF = 0;
-  var clickCount = 0;
-  var msgs = ['喵~','你好!','呼噜噜','摸我!','❤️','喵呜!','好困'];
+  var frame = 0, isBlinking = false, blinkF = 0, clickCount = 0;
+  var msgs = ['喵~','你好呀!','呼噜噜...','摸摸我!','❤️','好开心!','喵呜~','一起玩!'];
 
   function say(t){bubble.textContent=t;bubble.style.opacity='1';clearTimeout(bubble._t);bubble._t=setTimeout(function(){bubble.style.opacity='0'},2200)}
 
-  // ===== PIXEL ART CAT (chibi style) =====
-  // Each "pixel" is 6x6 on the 120x120 canvas = 20x20 grid
-  var PX = 6;
+  function drawCat(blink){
+    ctx.clearRect(0,0,140,140);
+    var c=ctx;
 
-  function rect(x,y,w,h,color){
-    ctx.fillStyle=color;ctx.fillRect(x*PX,y*PX,(w||1)*PX,(h||1)*PX);
-  }
+    // Shadow
+    c.fillStyle='rgba(0,0,0,.08)';c.beginPath();c.ellipse(70,132,40,6,0,0,Math.PI*2);c.fill();
 
-  function drawPixelCat(blink){
-    ctx.clearRect(0,0,120,120);
-
-    // Shadow under cat
-    ctx.fillStyle='rgba(0,0,0,.1)';ctx.beginPath();ctx.ellipse(60,114,30,5,0,0,Math.PI*2);ctx.fill();
-
-    // === TAIL (behind body) ===
-    var tx = 14 + Math.sin(tailF)*3;
-    var ty = 12 + Math.cos(tailF)*2;
-    rect(13,12,1,1,'#f59e0b');rect(12,12,1,1,'#f59e0b');
-    rect(11-Math.floor(Math.sin(tailF)*2),12-Math.floor(Math.cos(tailF)*1),1,1,'#fbbf24');
+    // === TAIL (behind) ===
+    c.save();c.translate(40,105);c.rotate(.3+Math.sin(frame*.06)*.3);
+    c.fillStyle='#f59e0b';c.beginPath();c.moveTo(0,0);c.quadraticCurveTo(-20,-10,-30,-25);c.quadraticCurveTo(-25,-30,-15,-20);c.quadraticCurveTo(-5,-5,0,0);c.fill();
+    c.fillStyle='#fbbf24';c.beginPath();c.moveTo(-2,0);c.quadraticCurveTo(-18,-5,-28,-18);c.quadraticCurveTo(-24,-22,-15,-16);c.quadraticCurveTo(-5,-3,-2,0);c.fill();
+    c.restore();
 
     // === BODY ===
-    // Main body (chibi - small, round)
-    rect(8,13,5,4,'#fbbf24'); // body top
-    rect(7,14,7,4,'#fbbf24'); // body mid
-    rect(8,18,5,1,'#f59e0b'); // body bottom shadow
-
+    var bodyGrad=c.createLinearGradient(50,80,50,125);
+    bodyGrad.addColorStop(0,'#fbbf24');bodyGrad.addColorStop(1,'#f59e0b');
+    c.fillStyle=bodyGrad;c.beginPath();c.ellipse(70,108,30,24,0,0,Math.PI*2);c.fill();
     // Belly
-    rect(9,15,3,2,'#fef3c7');
+    c.fillStyle='#fef3c7';c.beginPath();c.ellipse(70,112,20,15,0,0,Math.PI*2);c.fill();
 
-    // === PAWS ===
-    // Front paws
-    rect(7,17,2,2,'#fbbf24'); // left paw
-    rect(12,17,2,2,'#fbbf24'); // right paw
-    rect(7,18,2,1,'#fef3c7'); // left paw pad
-    rect(12,18,2,1,'#fef3c7'); // right paw pad
+    // === BACK PAWS ===
+    c.fillStyle='#fbbf24';c.beginPath();c.ellipse(48,125,14,8,0,0,Math.PI*2);c.fill();
+    c.beginPath();c.ellipse(92,125,14,8,0,0,Math.PI*2);c.fill();
+    c.fillStyle='#fef3c7';c.beginPath();c.ellipse(48,125,7,4,0,0,Math.PI*2);c.fill();
+    c.beginPath();c.ellipse(92,125,7,4,0,0,Math.PI*2);c.fill();
+    // Toe beans
+    c.fillStyle='#fca5a5';c.beginPath();c.arc(43,125,2.5,0,Math.PI*2);c.fill();
+    c.beginPath();c.arc(48,128,2.5,0,Math.PI*2);c.fill();
+    c.beginPath();c.arc(53,125,2.5,0,Math.PI*2);c.fill();
+    c.beginPath();c.arc(87,125,2.5,0,Math.PI*2);c.fill();
+    c.beginPath();c.arc(92,128,2.5,0,Math.PI*2);c.fill();
+    c.beginPath();c.arc(97,125,2.5,0,Math.PI*2);c.fill();
 
-    // Back paws (peeking out)
-    rect(6,17,1,1,'#f59e0b');
-    rect(14,17,1,1,'#f59e0b');
+    // === FRONT PAWS ===
+    c.fillStyle='#fbbf24';c.beginPath();c.ellipse(55,118,10,7,.2,0,Math.PI*2);c.fill();
+    c.beginPath();c.ellipse(85,118,10,7,-.2,0,Math.PI*2);c.fill();
+    c.fillStyle='#fef3c7';c.beginPath();c.ellipse(55,118,5,3.5,.2,0,Math.PI*2);c.fill();
+    c.beginPath();c.ellipse(85,118,5,3.5,-.2,0,Math.PI*2);c.fill();
 
-    // === HEAD (large - chibi proportion) ===
-    rect(6,6,9,1,'#fbbf24'); // top of head
-    rect(5,7,11,4,'#fbbf24'); // main head
-    rect(6,11,9,2,'#fbbf24'); // lower head
-    // Head outline/shadow bottom
-    rect(6,12,9,1,'#f59e0b');
+    // === HEAD ===
+    var headGrad=c.createRadialGradient(65,60,5,70,65,40);
+    headGrad.addColorStop(0,'#fef3c7');headGrad.addColorStop(.3,'#fde68a');headGrad.addColorStop(1,'#fbbf24');
+    c.fillStyle=headGrad;c.beginPath();c.ellipse(70,65,32,30,0,0,Math.PI*2);c.fill();
 
     // === EARS ===
-    rect(5,5,1,2,'#fbbf24'); // left ear outer
-    rect(4,4,2,2,'#fbbf24');
-    rect(6,5,1,1,'#fca5a5'); // left ear inner
-
-    rect(15,5,1,2,'#fbbf24'); // right ear outer
-    rect(15,4,2,2,'#fbbf24');
-    rect(14,5,1,1,'#fca5a5'); // right ear inner
+    c.fillStyle='#fbbf24';c.beginPath();c.moveTo(42,55);c.lineTo(28,20);c.lineTo(55,42);c.fill();
+    c.beginPath();c.moveTo(98,55);c.lineTo(112,20);c.lineTo(85,42);c.fill();
+    c.fillStyle='#fca5a5';c.beginPath();c.moveTo(46,52);c.lineTo(36,28);c.lineTo(54,45);c.fill();
+    c.beginPath();c.moveTo(94,52);c.lineTo(104,28);c.lineTo(86,45);c.fill();
 
     // === EYES ===
     if (blink) {
-      // Blink - flat line
-      rect(7,8,3,1,'#1e293b');
-      rect(11,8,3,1,'#1e293b');
+      c.strokeStyle='#1e293b';c.lineWidth=2.5;c.lineCap='round';
+      c.beginPath();c.moveTo(53,63);c.lineTo(67,63);c.stroke();
+      c.beginPath();c.moveTo(73,63);c.lineTo(87,63);c.stroke();
     } else {
-      // Big cute eyes
-      // Left eye - white
-      rect(7,7,3,3,'#fff');
-      rect(7,6,1,1,'#fff');
-      // Left eye - iris
-      rect(8,8,2,2,'#1e293b');
-      // Left eye - shine
-      rect(8,7,1,1,'#fff');
-      rect(9,9,1,1,'#fff');
-
-      // Right eye - white
-      rect(11,7,3,3,'#fff');
-      rect(12,6,1,1,'#fff');
-      // Right eye - iris
-      rect(12,8,2,2,'#1e293b');
-      // Right eye - shine
-      rect(12,7,1,1,'#fff');
-      rect(13,9,1,1,'#fff');
+      // Eye whites
+      c.fillStyle='#fff';c.beginPath();c.ellipse(60,62,11,12,0,0,Math.PI*2);c.fill();
+      c.beginPath();c.ellipse(80,62,11,12,0,0,Math.PI*2);c.fill();
+      // Irises
+      var irisGrad=c.createRadialGradient(58,60,2,60,62,9);
+      irisGrad.addColorStop(0,'#1e293b');irisGrad.addColorStop(.6,'#334155');irisGrad.addColorStop(1,'#475569');
+      c.fillStyle=irisGrad;c.beginPath();c.ellipse(60,62,7.5,9,0,0,Math.PI*2);c.fill();
+      c.fillStyle=irisGrad;c.beginPath();c.ellipse(80,62,7.5,9,0,0,Math.PI*2);c.fill();
+      // Pupils
+      c.fillStyle='#000';c.beginPath();c.arc(60,62,4,0,Math.PI*2);c.fill();
+      c.beginPath();c.arc(80,62,4,0,Math.PI*2);c.fill();
+      // Shine
+      c.fillStyle='#fff';c.beginPath();c.arc(63,57,3.5,0,Math.PI*2);c.fill();
+      c.beginPath();c.arc(83,57,3.5,0,Math.PI*2);c.fill();
+      c.beginPath();c.arc(57,64,1.5,0,Math.PI*2);c.fill();
+      c.beginPath();c.arc(77,64,1.5,0,Math.PI*2);c.fill();
     }
 
     // === NOSE ===
-    rect(10,10,1,1,'#fca5a5');
+    c.fillStyle='#fca5a5';c.beginPath();c.moveTo(70,73);c.lineTo(65,78);c.lineTo(75,78);c.fill();
+    // Nose shine
+    c.fillStyle='rgba(255,255,255,.4)';c.beginPath();c.arc(68,74,1.5,0,Math.PI*2);c.fill();
 
     // === MOUTH ===
-    rect(9,11,1,1,'#92400e');
-    rect(11,11,1,1,'#92400e');
-    rect(10,11,1,1,'#d97706');
+    c.strokeStyle='#92400e';c.lineWidth=1.2;c.lineCap='round';
+    c.beginPath();c.moveTo(70,78);c.lineTo(70,82);c.stroke();
+    c.beginPath();c.moveTo(70,82);c.quadraticCurveTo(62,85,58,80);c.stroke();
+    c.beginPath();c.moveTo(70,82);c.quadraticCurveTo(78,85,82,80);c.stroke();
 
     // === WHISKERS ===
-    ctx.fillStyle='#d97706';
-    ctx.fillRect(4*PX,9*PX,2*PX,1); // left whisker 1
-    ctx.fillRect(4*PX,10*PX,2*PX,1); // left whisker 2
-    ctx.fillRect(15*PX,9*PX,2*PX,1); // right whisker 1
-    ctx.fillRect(15*PX,10*PX,2*PX,1); // right whisker 2
+    c.strokeStyle='#d97706';c.lineWidth=.8;c.lineCap='round';
+    c.beginPath();c.moveTo(42,72);c.quadraticCurveTo(25,68,16,65);c.stroke();
+    c.beginPath();c.moveTo(40,76);c.quadraticCurveTo(22,76,14,76);c.stroke();
+    c.beginPath();c.moveTo(42,80);c.quadraticCurveTo(25,84,16,87);c.stroke();
+    c.beginPath();c.moveTo(98,72);c.quadraticCurveTo(115,68,124,65);c.stroke();
+    c.beginPath();c.moveTo(100,76);c.quadraticCurveTo(118,76,126,76);c.stroke();
+    c.beginPath();c.moveTo(98,80);c.quadraticCurveTo(115,84,124,87);c.stroke();
 
     // === BLUSH ===
-    ctx.fillStyle='rgba(252,165,165,.4)';
-    ctx.fillRect(6*PX,10*PX,2*PX,1); // left blush
-    ctx.fillRect(13*PX,10*PX,2*PX,1); // right blush
+    c.fillStyle='rgba(252,165,165,.3)';c.beginPath();c.ellipse(48,74,7,4,0,0,Math.PI*2);c.fill();
+    c.beginPath();c.ellipse(92,74,7,4,0,0,Math.PI*2);c.fill();
 
-    // === CHEEK FLUFF ===
-    rect(5,10,1,1,'#fbbf24');
-    rect(15,10,1,1,'#fbbf24');
+    // === FOREHEAD STRIPES ===
+    c.strokeStyle='#f59e0b';c.lineWidth=1.5;c.lineCap='round';
+    c.beginPath();c.moveTo(64,45);c.lineTo(66,40);c.stroke();
+    c.beginPath();c.moveTo(70,43);c.lineTo(70,37);c.stroke();
+    c.beginPath();c.moveTo(76,45);c.lineTo(74,40);c.stroke();
   }
 
-  function jump(){canvas.style.transform='translateY(-15px)';setTimeout(function(){canvas.style.transform=''},220)}
+  function jumpAnim(){canvas.style.transform='translateY(-12px) scale(1.08)';setTimeout(function(){canvas.style.transform=''},200)}
 
-  // ===== DRAG =====
-  var dragging = false, dragOX = 0, dragOY = 0, petX = 20, petY = 0;
+  // ===== DRAG (fixed) =====
+  var dragging=false,startX=0,startY=0,petX=20,petY=0;
   function updatePos(){container.style.left=petX+'px';container.style.bottom=(80-petY)+'px'}
+  updatePos();
 
-  container.addEventListener('mousedown',function(e){
-    if (e.button !== 0) return;
-    dragging = true;
-    container.style.cursor = 'grabbing';
-    dragOX = e.clientX - container.getBoundingClientRect().left;
-    dragOY = e.clientY - container.getBoundingClientRect().top;
+  container.addEventListener('pointerdown',function(e){
+    dragging=true;container.style.cursor='grabbing';container.setPointerCapture(e.pointerId);
+    startX=e.clientX-petX;startY=e.clientY-(window.innerHeight-80+petY);
+    e.preventDefault();e.stopPropagation();
+  });
+
+  container.addEventListener('pointermove',function(e){
+    if(!dragging)return;
+    petX=e.clientX-startX;petY=-(e.clientY-startY)+window.innerHeight-80;
+    petX=Math.max(-30,Math.min(window.innerWidth-60,petX));
+    petY=Math.max(-window.innerHeight+120,Math.min(250,petY));
+    updatePos();
     e.preventDefault();
   });
 
-  document.addEventListener('mousemove',function(e){
-    if (!dragging) return;
-    petX = e.clientX - dragOX;
-    petY = -(e.clientY - dragOY) + window.innerHeight - 80;
-    petX = Math.max(-20, Math.min(window.innerWidth-60, petX));
-    petY = Math.max(-window.innerHeight+100, Math.min(200, petY));
-    updatePos();
-  });
-
-  document.addEventListener('mouseup',function(){
-    if (dragging) {
-      dragging = false;
-      container.style.cursor = 'grab';
-      // Bounce back to bottom area
-      if (petY < -60) {
-        petY = 0;
-        var ani = container.animate([{bottom:container.style.bottom},{bottom:'80px'}],{duration:400,easing:'ease-out'});
-        ani.onfinish = function(){petY=0;updatePos()};
-      }
+  container.addEventListener('pointerup',function(e){
+    if(!dragging)return;
+    dragging=false;container.style.cursor='grab';container.releasePointerCapture(e.pointerId);
+    // Return to bottom if too high
+    if(petY>60){var startY2=petY;var animStart=performance.now();
+      function bounceBack(ts){var p=(ts-animStart)/400;if(p>=1){petY=0;updatePos();return}
+        petY=startY2*(1-p);updatePos();requestAnimationFrame(bounceBack)}
+      requestAnimationFrame(bounceBack)
     }
   });
 
-  // Click interaction
-  container.addEventListener('click',function(e){
-    if (dragging) return;
-    clickCount++; jump();
-    if (clickCount % 4 === 0) { say('别戳啦!'); canvas.style.transform='rotate(10deg)'; setTimeout(function(){canvas.style.transform=''},250) }
-    else if (clickCount % 7 === 0) {
-      say('❤️');
+  // Click (only if not dragged)
+  var moved=false;
+  container.addEventListener('pointerdown',function(){moved=false});
+  container.addEventListener('pointermove',function(){if(dragging&&(Math.abs(petX-20)>5||Math.abs(petY)>5))moved=true});
+  container.addEventListener('pointerup',function(e){
+    if(moved)return;
+    clickCount++;jumpAnim();
+    if(clickCount%4===0){say('别戳啦!');canvas.style.transform='rotate(8deg)';setTimeout(function(){canvas.style.transform=''},250)}
+    else if(clickCount%7===0){say('❤️');
       for(var i=0;i<5;i++){var h=document.createElement('div');h.textContent=['❤️','💕','💛','✨','🌟'][i];
         var r=container.getBoundingClientRect();
-        h.style.cssText='position:fixed;left:'+(r.left+15+Math.random()*30)+'px;bottom:'+(window.innerHeight-r.bottom+15)+'px;font-size:.85rem;pointer-events:none;z-index:9999;animation:petFloat2 1.1s ease-out forwards;';
+        h.style.cssText='position:fixed;left:'+(r.left+20+Math.random()*40)+'px;bottom:'+(window.innerHeight-r.bottom+10)+'px;font-size:.85rem;pointer-events:none;z-index:9999;animation:petF2 1.1s ease-out forwards;';
         document.body.appendChild(h);setTimeout(function(){h.remove()},1200)}
-    } else say(msgs[Math.floor(Math.random()*3)]);
+    }else say(msgs[Math.floor(Math.random()*3)]);
   });
 
-  var fs = document.createElement('style');
-  fs.textContent = '@keyframes petFloat2{0%{opacity:1;transform:translateY(0)}100%{opacity:0;transform:translateY(-60px) scale(1.3)}}';
-  document.head.appendChild(fs);
+  var sty=document.createElement('style');sty.textContent='@keyframes petF2{0%{opacity:1;transform:translateY(0)}100%{opacity:0;transform:translateY(-60px) scale(1.3)}}';
+  document.head.appendChild(sty);
 
-  // Animation loop
   function animate(){
     frame++;
-    tailF += 0.08;
-    if (isBlinking) { blinkF++; if (blinkF > 5) { isBlinking = false; blinkF = 0; } }
-    else if (frame % 80 === 0) isBlinking = true;
-    if (frame % 200 === 0 && Math.random() < .2) say(msgs[Math.floor(Math.random()*msgs.length)]);
-    drawPixelCat(isBlinking);
-    requestAnimationFrame(animate);
+    if(isBlinking){blinkF++;if(blinkF>5){isBlinking=false;blinkF=0}}else if(frame%90===0)isBlinking=true;
+    if(frame%250===0&&Math.random()<.15)say(msgs[Math.floor(Math.random()*msgs.length)]);
+    drawCat(isBlinking);requestAnimationFrame(animate);
   }
 
-  setTimeout(function(){say('喵~ 你好!')}, 1500);
-  updatePos();
+  setTimeout(function(){say('喵~ 你好!')},1500);
   animate();
 })();
