@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>飞机大战 - 橘子站</title>
+<link rel="stylesheet" href="../css/style.css">
+<style>
+.tool-page{max-width:700px!important}
+.game-wrap{text-align:center}
+canvas{border-radius:12px;box-shadow:0 4px 20px rgba(0,0,0,.15);background:linear-gradient(180deg,#0a0a2e 0%,#1a1a4e 50%,#0d0d2d 100%)}
+.game-info{display:flex;justify-content:center;gap:30px;margin:10px 0;font-size:1rem;font-weight:700;color:var(--text)}
+</style>
+</head>
+<body>
+<div class="tool-page">
+  <a href="../index.html" class="back-link">← 返回橘子站</a>
+  <div class="tool-header"><h1>✈️ 飞机大战</h1><p class="desc">方向键移动 · 空格射击 · 消灭敌机</p></div>
+  <div class="tool-body game-wrap">
+    <div class="game-info">
+      <span>🛡️ 生命: <span id="lives">3</span></span>
+      <span>⭐ 分数: <span id="score">0</span></span>
+      <span>💥 击杀: <span id="kills">0</span></span>
+    </div>
+    <canvas id="game"></canvas>
+    <p style="margin-top:10px;font-size:.85rem;color:var(--text-secondary)">← → ↑ ↓ 移动 | 空格射击 | P 暂停</p>
+  </div>
+</div>
+<script>
+(function(){
+var c=document.getElementById("game"),ctx=c.getContext("2d");
+c.width=480;c.height=700;
+
+var player={x:220,y:600,w:40,h:44,speed:5,alive:true};
+var bullets=[],enemies=[],particles=[],powerups=[];
+var score=0,kills=0,lives=3,gameOver=false,paused=false;
+var keys={},frame=0,enemyTimer=0,powerTimer=0;
+var starField=[];
+
+// Stars
+for(var i=0;i<80;i++) starField.push({x:Math.random()*c.width,y:Math.random()*c.height,s:Math.random()*2+1,v:Math.random()*2+0.5});
+
+function drawPlayer(){
+  if(!player.alive)return;
+  var p=player;
+  ctx.save();ctx.translate(p.x+p.w/2,p.y+p.h/2);
+  // Engine glow
+  ctx.fillStyle="#ff6600";ctx.shadowColor="#ff6600";ctx.shadowBlur=12;
+  ctx.beginPath();ctx.moveTo(-8,22);ctx.lineTo(0,32);ctx.lineTo(8,22);ctx.fill();
+  ctx.shadowBlur=0;
+  // Body
+  ctx.fillStyle="#4488ff";
+  ctx.beginPath();ctx.moveTo(0,-22);ctx.lineTo(-16,10);ctx.lineTo(-8,16);ctx.lineTo(0,20);ctx.lineTo(8,16);ctx.lineTo(16,10);ctx.closePath();ctx.fill();
+  ctx.strokeStyle="#88bbff";ctx.lineWidth=1.5;ctx.stroke();
+  // Cockpit
+  ctx.fillStyle="#aaddff";ctx.beginPath();ctx.ellipse(0,-6,6,10,0,0,Math.PI*2);ctx.fill();
+  // Wings
+  ctx.fillStyle="#3366cc";
+  ctx.beginPath();ctx.moveTo(-16,10);ctx.lineTo(-24,18);ctx.lineTo(-12,14);ctx.fill();
+  ctx.beginPath();ctx.moveTo(16,10);ctx.lineTo(24,18);ctx.lineTo(12,14);ctx.fill();
+  ctx.restore();
+}
+
+function drawEnemy(e){
+  ctx.save();ctx.translate(e.x,e.y);
+  ctx.fillStyle=e.color||"#ff4444";
+  ctx.beginPath();ctx.moveTo(0,-e.r);ctx.lineTo(-e.r*0.7,e.r*0.3);ctx.lineTo(-e.r*0.4,e.r*0.6);ctx.lineTo(0,e.r*0.3);ctx.lineTo(e.r*0.4,e.r*0.6);ctx.lineTo(e.r*0.7,e.r*0.3);ctx.closePath();ctx.fill();
+  ctx.fillStyle="#ff8888";ctx.beginPath();ctx.arc(0,-2,e.r*0.35,0,Math.PI*2);ctx.fill();
+  ctx.restore();
+}
+
+function spawnEnemy(){
+  var types=[{r:16,hp:1,score:100,color:"#ff4444",speed:2},
+             {r:22,hp:2,score:200,color:"#ff8800",speed:1.5},
+             {r:12,hp:1,score:150,color:"#ff44ff",speed:3}];
+  var t=types[Math.floor(Math.random()*types.length)];
+  enemies.push({x:Math.random()*(c.width-40)+20,y:-30,r:t.r,hp:t.hp,maxHp:t.hp,score:t.score,color:t.color,speed:t.speed});
+}
+
+function spawnPowerup(){
+  powerups.push({x:Math.random()*(c.width-30)+15,y:-20,r:10,type:Math.random()<0.5?"heal":"rapid"});
+}
+
+function shoot(){
+  if(!player.alive||gameOver||paused)return;
+  bullets.push({x:player.x+player.w/2-2,y:player.y-20,w:4,h:14,speed:8});
+  if(frame%4===0) bullets.push({x:player.x+10,y:player.y-10,w:3,h:10,speed:8});
+  if(frame%4===0) bullets.push({x:player.x+player.w-13,y:player.y-10,w:3,h:10,speed:8});
+}
+
+function explode(x,y,color,count){
+  for(var i=0;i<count;i++){
+    var a=Math.random()*Math.PI*2,v=Math.random()*4+1;
+    particles.push({x:x,y:y,vx:Math.cos(a)*v,vy:Math.sin(a)*v,life:20+Math.random()*20,color:color,r:Math.random()*3+1});
+  }
+}
+
+function update(){
+  if(gameOver||paused)return;
+  frame++;
+
+  // Player movement
+  if(player.alive){
+    if(keys["ArrowLeft"]||keys["a"]) player.x-=player.speed;
+    if(keys["ArrowRight"]||keys["d"]) player.x+=player.speed;
+    if(keys["ArrowUp"]||keys["w"]) player.y-=player.speed;
+    if(keys["ArrowDown"]||keys["s"]) player.y+=player.speed;
+    player.x=Math.max(0,Math.min(c.width-player.w,player.x));
+    player.y=Math.max(c.height*0.5,Math.min(c.height-player.h,player.y));
+    if(keys[" "]) shoot();
+  }
+
+  // Stars
+  starField.forEach(function(s){s.y+=s.v;if(s.y>c.height){s.y=0;s.x=Math.random()*c.width}});
+
+  // Bullets
+  for(var i=bullets.length-1;i>=0;i--){
+    bullets[i].y-=bullets[i].speed;
+    if(bullets[i].y<-20) bullets.splice(i,1);
+  }
+
+  // Enemies
+  enemyTimer++;if(enemyTimer>40-Math.min(kills*0.5,25)){enemyTimer=0;spawnEnemy()}
+  for(var i=enemies.length-1;i>=0;i--){
+    enemies[i].y+=enemies[i].speed;
+    if(enemies[i].y>c.height+40){enemies.splice(i,1);if(player.alive){lives--;document.getElementById("lives").textContent=lives;if(lives<=0){gameOver=true}}continue}
+    // Collision with player
+    if(player.alive&&Math.abs(enemies[i].x-player.x-player.w/2)<player.w/2+enemies[i].r&&Math.abs(enemies[i].y-player.y-player.h/2)<player.h/2+enemies[i].r){
+      explode(player.x+player.w/2,player.y+player.h/2,"#ff8800",30);
+      enemies.splice(i,1);lives--;document.getElementById("lives").textContent=lives;
+      if(lives<=0){gameOver=true;player.alive=false}
+      continue;
+    }
+    // Bullet hits
+    for(var j=bullets.length-1;j>=0;j--){
+      if(Math.abs(bullets[j].x-enemies[i].x)<enemies[i].r&&Math.abs(bullets[j].y-enemies[i].y)<enemies[i].r){
+        enemies[i].hp--;bullets.splice(j,1);
+        if(enemies[i].hp<=0){
+          explode(enemies[i].x,enemies[i].y,enemies[i].color,15);
+          score+=enemies[i].score;kills++;
+          document.getElementById("score").textContent=score;
+          document.getElementById("kills").textContent=kills;
+          enemies.splice(i,1);
+        }
+        break;
+      }
+    }
+  }
+
+  // Powerups
+  powerTimer++;if(powerTimer>300){powerTimer=0;spawnPowerup()}
+  for(var i=powerups.length-1;i>=0;i--){
+    powerups[i].y+=1.5;
+    if(powerups[i].y>c.height+20){powerups.splice(i,1);continue}
+    if(player.alive&&Math.abs(powerups[i].x-player.x-player.w/2)<30&&Math.abs(powerups[i].y-player.y-player.h/2)<30){
+      if(powerups[i].type==="heal"&&lives<5){lives++;document.getElementById("lives").textContent=lives}
+      powerups.splice(i,1);
+    }
+  }
+
+  // Particles
+  for(var i=particles.length-1;i>=0;i--){
+    particles[i].x+=particles[i].vx;particles[i].y+=particles[i].vy;particles[i].life--;
+    if(particles[i].life<=0) particles.splice(i,1);
+  }
+}
+
+function draw(){
+  ctx.clearRect(0,0,c.width,c.height);
+
+  // Stars
+  starField.forEach(function(s){ctx.fillStyle="rgba(255,255,255,"+(s.s*0.3)+")";ctx.fillRect(s.x,s.y,s.s,s.s)});
+
+  // Particles
+  particles.forEach(function(p){ctx.fillStyle=p.color;ctx.globalAlpha=p.life/40;ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);ctx.fill()});
+  ctx.globalAlpha=1;
+
+  // Powerups
+  powerups.forEach(function(p){
+    ctx.fillStyle=p.type==="heal"?"#44ff44":"#ffff44";ctx.shadowColor=p.type==="heal"?"#44ff44":"#ffff44";ctx.shadowBlur=8;
+    ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);ctx.fill();
+    ctx.fillStyle="white";ctx.font="bold 12px sans-serif";ctx.textAlign="center";ctx.fillText(p.type==="heal"?"+":"⚡",p.x,p.y+4);
+    ctx.shadowBlur=0;
+  });
+
+  // Enemies
+  enemies.forEach(function(e){drawEnemy(e)});
+
+  // Bullets
+  bullets.forEach(function(b){ctx.fillStyle="#ffff44";ctx.shadowColor="#ffff44";ctx.shadowBlur=6;ctx.fillRect(b.x,b.y,b.w,b.h);ctx.shadowBlur=0});
+
+  // Player
+  drawPlayer();
+
+  // Game Over
+  if(gameOver){
+    ctx.fillStyle="rgba(0,0,0,.7)";ctx.fillRect(0,0,c.width,c.height);
+    ctx.fillStyle="#ff4444";ctx.font="bold 36px sans-serif";ctx.textAlign="center";ctx.fillText("游戏结束",c.width/2,c.height/2-20);
+    ctx.fillStyle="white";ctx.font="18px sans-serif";ctx.fillText("分数: "+score+" | 击杀: "+kills,c.width/2,c.height/2+30);
+    ctx.fillText("点击重新开始",c.width/2,c.height/2+60);
+  }
+
+  if(paused&&!gameOver){
+    ctx.fillStyle="rgba(0,0,0,.5)";ctx.fillRect(0,0,c.width,c.height);
+    ctx.fillStyle="white";ctx.font="bold 30px sans-serif";ctx.textAlign="center";ctx.fillText("暂停中",c.width/2,c.height/2);
+  }
+}
+
+function reset(){
+  player={x:220,y:600,w:40,h:44,speed:5,alive:true};
+  bullets=[];enemies=[];particles=[];powerups=[];
+  score=0;kills=0;lives=3;gameOver=false;paused=false;frame=0;enemyTimer=0;powerTimer=0;
+  document.getElementById("score").textContent="0";
+  document.getElementById("kills").textContent="0";
+  document.getElementById("lives").textContent="3";
+}
+
+document.addEventListener("keydown",function(e){keys[e.key]=true;if(e.key===" "){e.preventDefault();shoot()}if(e.key==="p"||e.key==="P"){paused=!paused}});
+document.addEventListener("keyup",function(e){keys[e.key]=false});
+c.addEventListener("click",function(){if(gameOver)reset()});
+
+function loop(){update();draw();requestAnimationFrame(loop)}
+loop();
+})();
+</script>
+<script src="../js/music-player.js?v=175807"></script>
+<script src="../js/ambient-effects.js?v=175807"></script>
+<script src="../js/theme-switcher.js?v=175807"></script>
+<script src="../js/web-pet.js?v=175807"></script>
+<script src="../js/easter-eggs.js?v=175807"></script>
+</body>
+</html>
