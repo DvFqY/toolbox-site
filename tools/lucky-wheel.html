@@ -58,5 +58,20 @@ renderTags();drawWheel();
 
 
 <div style="padding:8px 12px 12px">
-      <iframe <a href="https://music.163.com/outchain/player?type=2&amp;id=536098339&amp;auto=1&amp;height=66" target="_blank" rel="noopener" style="position:fixed;bottom:20px;left:20px;z-index:999999;display:flex;align-items:center;gap:6px;background:rgba(255,255,255,.9);border:1px solid #fed7aa;border-radius:50px;padding:6px 14px 6px 10px;text-decoration:none;box-shadow:0 2px 12px rgba(249,115,22,.2)">🎵 Lucky 徐梦圆 播放</a>
+      <iframe 
+<style>
+@keyframes neteasePulse {
+  0%, 100% { box-shadow: 0 4px 20px rgba(249,115,22,.4); }
+  50% { box-shadow: 0 4px 30px rgba(249,115,22,.7); }
+}
+</style>
+
+<a href="https://music.163.com/outchain/player?type=2&amp;id=536098339&amp;auto=1&amp;height=66" target="_blank" rel="noopener" style="position:fixed;bottom:20px;left:50%;transform:translateX(-50%);z-index:999999;display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.92);border:1.5px solid #fed7aa;border-radius:50px;padding:8px 18px 8px 14px;text-decoration:none;box-shadow:0 4px 20px rgba(249,115,22,.25);transition:all .3s" onmouseover="this.style.boxShadow='0 6px 30px rgba(249,115,22,.4)';this.style.transform='translateX(-50%) scale(1.05)'" onmouseout="this.style.boxShadow='0 4px 20px rgba(249,115,22,.25)';this.style.transform='translateX(-50%) scale(1)'" title="Lucky - 徐梦圆 (纯音乐)">
+  <span style="font-size:1.3rem">🎵</span>
+  <span style="display:flex;flex-direction:column;align-items:flex-start">
+    <span style="font-size:.85rem;color:#431407;font-weight:700;line-height:1.2">Lucky</span>
+    <span style="font-size:.65rem;color:#9a3412;line-height:1.2">徐梦圆 · 纯音乐</span>
+  </span>
+  <span style="font-size:.7rem;color:white;background:linear-gradient(135deg,#f97316,#ea580c);border-radius:12px;padding:3px 10px;font-weight:600">播放</span>
+</a>
 </body></html>
