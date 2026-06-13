@@ -22,13 +22,28 @@ useNow();
   <span id="busuanzi_value_site_uv"></span> 人</span>
 </div>
 <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
-<script src="../js/music-player.js?v=173341"></script>
-<script src="../js/ambient-effects.js?v=173341"></script>
-<script src="../js/theme-switcher.js?v=173341"></script>
-<script src="../js/web-pet.js?v=173341"></script>
-<script src="../js/easter-eggs.js?v=173341"></script>
+<script src="../js/music-player.js?v=173601"></script>
+<script src="../js/ambient-effects.js?v=173601"></script>
+<script src="../js/theme-switcher.js?v=173601"></script>
+<script src="../js/web-pet.js?v=173601"></script>
+<script src="../js/easter-eggs.js?v=173601"></script>
 
 
 
-<a href="https://music.163.com/outchain/player?type=2&amp;id=536098339&amp;auto=1&amp;height=66" target="_blank" rel="noopener" style="position:fixed;bottom:20px;left:20px;z-index:999999;width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,#f97316,#ea580c);border:2px solid #fed7aa;display:flex;align-items:center;justify-content:center;font-size:1.2rem;cursor:pointer;box-shadow:0 2px 12px rgba(249,115,22,.3);user-select:none;text-decoration:none" title="Lucky - 徐梦圆 (纯音乐)">🎵</a>
+
+
+<!-- 网易云音乐 Lucky 播放器 -->
+<div id="neteaseWrap" style="position:fixed;bottom:20px;left:20px;z-index:999999">
+  <div id="neteasePanel" style="display:none;width:330px;background:rgba(255,255,255,.95);border-radius:14px;border:1px solid #fed7aa;box-shadow:0 8px 32px rgba(249,115,22,.2);overflow:hidden;margin-bottom:8px">
+    <div style="background:linear-gradient(135deg,#f97316,#ea580c);padding:10px 16px;display:flex;align-items:center;justify-content:space-between">
+      <span style="color:white;font-weight:700;font-size:.9rem">🍊 Lucky - 徐梦圆</span>
+      <span onclick="document.getElementById('neteasePanel').style.display='none';document.getElementById('neteaseBtn').textContent='🎵'" style="color:rgba(255,255,255,.7);cursor:pointer;font-size:1.1rem">✕</span>
+    </div>
+    <div style="padding:8px 12px 12px">
+      <iframe id="neteaseIframe" src="https://music.163.com/outchain/player?type=2&id=536098339&auto=0&height=66" style="width:100%;height:66px;border:none;border-radius:6px" allow="autoplay"></iframe>
+    </div>
+    <div style="padding:6px 16px;font-size:.75rem;color:#9a3412;text-align:center;border-top:1px solid #fed7aa;background:#fffbeb">点击 ▶ 播放 · 纯音乐</div>
+  </div>
+  <div id="neteaseBtn" onclick="var p=document.getElementById('neteasePanel');var b=this;if(p.style.display=='none'){p.style.display='block';b.textContent='✕';document.getElementById('neteaseIframe').src='https://music.163.com/outchain/player?type=2&id=536098339&auto=1&height=66'}else{p.style.display='none';b.textContent='🎵'}" style="width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,#f97316,#ea580c);border:2px solid #fed7aa;display:flex;align-items:center;justify-content:center;font-size:1.2rem;cursor:pointer;box-shadow:0 2px 12px rgba(249,115,22,.3);user-select:none">🎵</div>
+</div>
 </body></html>
