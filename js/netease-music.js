@@ -5,9 +5,9 @@ window.__neteaseLoaded=1;
 var isOpen = false;
 var iframe = null;
 
-// Build UI
+// Build UI - positioned on LEFT side to avoid conflict with music-player
 var wrapper = document.createElement('div');
-wrapper.style.cssText = 'position:fixed;bottom:20px;right:20px;z-index:9999;display:flex;flex-direction:column;align-items:flex-end;gap:6px';
+wrapper.style.cssText = 'position:fixed;bottom:20px;left:20px;z-index:99999;display:flex;flex-direction:column;align-items:flex-start;gap:6px';
 
 // Toggle button
 var toggleBtn = document.createElement('div');
@@ -63,7 +63,7 @@ panel.appendChild(playerArea);
 // Footer
 var footer = document.createElement('div');
 footer.style.cssText = 'padding:6px 16px;font-size:.75rem;color:#9a3412;text-align:center;border-top:1px solid #fed7aa;background:#fffbeb';
-footer.textContent = '🎵 点击播放按钮开始';
+footer.textContent = '🎵 点击下方 ▶ 播放';
 panel.appendChild(footer);
 
 wrapper.appendChild(panel);
@@ -74,10 +74,10 @@ function togglePanel() {
   panel.style.display = isOpen ? 'block' : 'none';
   toggleBtn.innerHTML = isOpen ? '✕' : '🎵';
   toggleBtn.style.background = isOpen ? 'linear-gradient(135deg,#ea580c,#dc2626)' : 'linear-gradient(135deg,#f97316,#ea580c)';
-  // Reload iframe with auto=1 when opening
   if(isOpen) {
+    // User clicked -> autoplay allowed
     iframe.src = 'https://music.163.com/outchain/player?type=2&id=536098339&auto=1&height=66';
-    footer.textContent = '🎵 在播放器中点击 ▶ 播放';
+    footer.textContent = '🎵 正在播放 Lucky - 徐梦圆';
   } else {
     iframe.src = 'https://music.163.com/outchain/player?type=2&id=536098339&auto=0&height=66';
   }
