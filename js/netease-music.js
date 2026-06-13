@@ -3,9 +3,8 @@ if(window.__neteaseLoaded)return;
 window.__neteaseLoaded=1;
 
 var isOpen = false;
-var iframe = null;
 
-// Build UI - positioned on LEFT side to avoid conflict with music-player
+// Build UI
 var wrapper = document.createElement('div');
 wrapper.style.cssText = 'position:fixed;bottom:20px;left:20px;z-index:99999;display:flex;flex-direction:column;align-items:flex-start;gap:6px';
 
@@ -37,33 +36,45 @@ panel.appendChild(header);
 
 // Song info
 var infoEl = document.createElement('div');
-infoEl.style.cssText = 'padding:14px 16px 8px;text-align:center';
+infoEl.style.cssText = 'padding:16px 16px 12px;text-align:center';
 var nameEl = document.createElement('div');
 nameEl.textContent = '♫ Lucky';
-nameEl.style.cssText = 'font-size:1.1rem;font-weight:700;color:#431407';
+nameEl.style.cssText = 'font-size:1.2rem;font-weight:700;color:#431407';
 var artistEl = document.createElement('div');
 artistEl.textContent = '徐梦圆 (纯音乐)';
-artistEl.style.cssText = 'font-size:.85rem;color:#9a3412;margin-top:2px';
+artistEl.style.cssText = 'font-size:.85rem;color:#9a3412;margin-top:4px';
 infoEl.appendChild(nameEl);
 infoEl.appendChild(artistEl);
 panel.appendChild(infoEl);
 
-// Player iframe
-var playerArea = document.createElement('div');
-playerArea.style.cssText = 'padding:8px 12px 12px';
-var iframeContainer = document.createElement('div');
-iframeContainer.style.cssText = 'border-radius:8px;overflow:hidden;height:66px';
-iframe = document.createElement('iframe');
-iframe.src = 'https://music.163.com/outchain/player?type=2&id=536098339&auto=0&height=66';
-iframe.style.cssText = 'width:100%;height:66px;border:none';
-iframeContainer.appendChild(iframe);
-playerArea.appendChild(iframeContainer);
-panel.appendChild(playerArea);
+// Big play button
+var bigPlayBtn = document.createElement('div');
+bigPlayBtn.textContent = '▶  在网易云播放';
+bigPlayBtn.style.cssText = 'margin:0 16px 12px;padding:12px 0;border-radius:50px;background:linear-gradient(135deg,#f97316,#ea580c);color:white;font-weight:700;font-size:1rem;text-align:center;cursor:pointer;transition:all .2s;box-shadow:0 2px 8px rgba(249,115,22,.3)';
+bigPlayBtn.onmouseenter = function(){bigPlayBtn.style.transform='scale(1.03)';bigPlayBtn.style.boxShadow='0 4px 16px rgba(249,115,22,.4)'};
+bigPlayBtn.onmouseleave = function(){bigPlayBtn.style.transform='scale(1)';bigPlayBtn.style.boxShadow='0 2px 8px rgba(249,115,22,.3)'};
+bigPlayBtn.onclick = function(e){
+  e.stopPropagation();
+  window.open('https://music.163.com/#/song?id=536098339', '_blank');
+};
+panel.appendChild(bigPlayBtn);
+
+// Direct play button (opens in new window)
+var directBtn = document.createElement('div');
+directBtn.textContent = '🔊 直接播放 (新窗口)';
+directBtn.style.cssText = 'margin:0 16px 16px;padding:10px 0;border-radius:50px;background:#fff7ed;color:#ea580c;font-weight:600;font-size:.9rem;text-align:center;cursor:pointer;border:1.5px solid #fed7aa;transition:all .2s';
+directBtn.onmouseenter = function(){directBtn.style.background='#ffedd5'};
+directBtn.onmouseleave = function(){directBtn.style.background='#fff7ed'};
+directBtn.onclick = function(e){
+  e.stopPropagation();
+  window.open('https://music.163.com/outchain/player?type=2&id=536098339&auto=1&height=66', '_blank','width=400,height=100');
+};
+panel.appendChild(directBtn);
 
 // Footer
 var footer = document.createElement('div');
-footer.style.cssText = 'padding:6px 16px;font-size:.75rem;color:#9a3412;text-align:center;border-top:1px solid #fed7aa;background:#fffbeb';
-footer.textContent = '🎵 点击下方 ▶ 播放';
+footer.style.cssText = 'padding:8px 16px;font-size:.75rem;color:#9a3412;text-align:center;border-top:1px solid #fed7aa;background:#fffbeb';
+footer.textContent = '🎵 点击上方按钮在新窗口播放';
 panel.appendChild(footer);
 
 wrapper.appendChild(panel);
@@ -74,13 +85,6 @@ function togglePanel() {
   panel.style.display = isOpen ? 'block' : 'none';
   toggleBtn.innerHTML = isOpen ? '✕' : '🎵';
   toggleBtn.style.background = isOpen ? 'linear-gradient(135deg,#ea580c,#dc2626)' : 'linear-gradient(135deg,#f97316,#ea580c)';
-  if(isOpen) {
-    // User clicked -> autoplay allowed
-    iframe.src = 'https://music.163.com/outchain/player?type=2&id=536098339&auto=1&height=66';
-    footer.textContent = '🎵 正在播放 Lucky - 徐梦圆';
-  } else {
-    iframe.src = 'https://music.163.com/outchain/player?type=2&id=536098339&auto=0&height=66';
-  }
 }
 
 toggleBtn.onclick = function(e){
