@@ -48,36 +48,6 @@ setFromInput();updateDisp();
 
 
 
-<!-- 网易云音乐 Lucky 播放器 -->
-<div id="neteaseWrap" style="position:fixed;bottom:20px;left:20px;z-index:999999">
-  <div id="neteasePanel" style="display:none;width:330px;background:rgba(255,255,255,.95);border-radius:14px;border:1px solid #fed7aa;box-shadow:0 8px 32px rgba(249,115,22,.2);overflow:hidden;margin-bottom:8px">
-    <div style="background:linear-gradient(135deg,#f97316,#ea580c);padding:10px 16px;display:flex;align-items:center;justify-content:space-between">
-      <span style="color:white;font-weight:700;font-size:.9rem">🍊 Lucky - 徐梦圆</span>
-      <span onclick="document.getElementById('neteasePanel').style.display='none';document.getElementById('neteaseBtn').textContent='🎵'" style="color:rgba(255,255,255,.7);cursor:pointer;font-size:1.1rem">✕</span>
-    </div>
-    <div style="padding:8px 12px 12px">
-      <iframe id="neteaseIframe" src="https://music.163.com/outchain/player?type=2&id=536098339&auto=0&height=66" style="width:100%;height:66px;border:none;border-radius:6px" allow="autoplay"></iframe>
-    </div>
-    <div style="padding:6px 16px;font-size:.75rem;color:#9a3412;text-align:center;border-top:1px solid #fed7aa;background:#fffbeb">点击 ▶ 播放 · 纯音乐</div>
-  </div>
-  
-</div>
-
-<iframe src="https://music.163.com/outchain/player?type=2&id=536098339&auto=0&height=66" style="position:fixed;bottom:20px;left:20px;z-index:999999;width:300px;height:66px;border:none;border-radius:8px;box-shadow:0 4px 16px rgba(0,0,0,.15)" allow="autoplay" id="neteasePlayer"></iframe>
-<script>
-(function(){
-  var p = document.getElementById('neteasePlayer');
-  p.onload = function(){
-    // Click anywhere on iframe to toggle play
-  };
-  // Auto-play on first user interaction anywhere
-  function enableAudio(){
-    p.src = 'https://music.163.com/outchain/player?type=2&id=536098339&auto=1&height=66';
-    document.removeEventListener('click', enableAudio);
-    document.removeEventListener('touchstart', enableAudio);
-  }
-  document.addEventListener('click', enableAudio);
-  document.addEventListener('touchstart', enableAudio);
-})();
-</script>
+<div style="padding:8px 12px 12px">
+      <iframe <a href="https://music.163.com/outchain/player?type=2&amp;id=536098339&amp;auto=1&amp;height=66" target="_blank" rel="noopener" style="position:fixed;bottom:20px;left:20px;z-index:999999;display:flex;align-items:center;gap:6px;background:rgba(255,255,255,.9);border:1px solid #fed7aa;border-radius:50px;padding:6px 14px 6px 10px;text-decoration:none;box-shadow:0 2px 12px rgba(249,115,22,.2)">🎵 Lucky 徐梦圆 播放</a>
 </body></html>
