@@ -1,23 +1,23 @@
-/* ===== 在线工具箱 - 全局样式 ===== */
+/* ===== 橘子站 - 全局样式 ===== */
 :root {
-  --bg: linear-gradient(135deg, #e8f0fe 0%, #f0f4ff 30%, #eef2ff 60%, #e0e7ff 100%);
-  --surface: rgba(255,255,255,.85);
-  --surface-hover: rgba(255,255,255,.95);
-  --border: #e2e8f0;
-  --text: #1e293b;
-  --text-secondary: #64748b;
-  --primary: #6366f1;
-  --primary-hover: #4f46e5;
-  --primary-light: #eef2ff;
-  --accent: #06b6d4;
+  --bg: linear-gradient(135deg, #fff7ed 0%, #fffbeb 30%, #fef3c7 60%, #ffedd5 100%);
+  --surface: rgba(255,255,255,.88);
+  --surface-hover: rgba(255,255,255,.96);
+  --border: #fed7aa;
+  --text: #431407;
+  --text-secondary: #9a3412;
+  --primary: #f97316;
+  --primary-hover: #ea580c;
+  --primary-light: #fff7ed;
+  --accent: #f59e0b;
   --success: #10b981;
   --warning: #f59e0b;
   --danger: #ef4444;
-  --radius: 12px;
+  --radius: 14px;
   --radius-sm: 8px;
-  --shadow: 0 1px 3px rgba(0,0,0,.08), 0 1px 2px rgba(0,0,0,.06);
-  --shadow-md: 0 4px 6px rgba(0,0,0,.07), 0 2px 4px rgba(0,0,0,.06);
-  --shadow-lg: 0 10px 25px rgba(0,0,0,.1);
+  --shadow: 0 1px 3px rgba(251,146,60,.12), 0 1px 2px rgba(251,146,60,.08);
+  --shadow-md: 0 4px 6px rgba(251,146,60,.1), 0 2px 4px rgba(251,146,60,.08);
+  --shadow-lg: 0 10px 25px rgba(251,146,60,.15);
   --max-width: 1200px;
 }
 
@@ -38,13 +38,13 @@ a:hover { color: var(--primary-hover); }
 
 /* Header */
 .site-header {
-  background: var(--surface);
+  background: rgba(255,255,255,.8);
   border-bottom: 1px solid var(--border);
   padding: 0 24px;
   position: sticky;
   top: 0;
   z-index: 100;
-  backdrop-filter: blur(10px);
+  backdrop-filter: blur(12px);
 }
 .header-inner {
   max-width: var(--max-width);
@@ -62,45 +62,58 @@ a:hover { color: var(--primary-hover); }
 
 /* Hero */
 .hero {
-  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #a855f7 100%);
+  background: linear-gradient(135deg, #f97316 0%, #fb923c 40%, #fbbf24 100%);
   color: white;
   padding: 60px 24px 50px;
   text-align: center;
+  position: relative;
+  overflow: hidden;
 }
-.hero h1 { font-size: 2.5rem; font-weight: 800; margin-bottom: 12px; letter-spacing: -.02em; }
-.hero p { font-size: 1.15rem; opacity: .9; max-width: 600px; margin: 0 auto 20px; }
+.hero::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle at 30% 50%, rgba(255,255,255,.08) 0%, transparent 50%),
+              radial-gradient(circle at 70% 50%, rgba(255,255,255,.06) 0%, transparent 50%);
+  pointer-events: none;
+}
+.hero h1 { font-size: 2.5rem; font-weight: 800; margin-bottom: 12px; letter-spacing: -.02em; position: relative; }
+.hero p { font-size: 1.15rem; opacity: .9; max-width: 600px; margin: 0 auto 20px; position: relative; }
 .hero-badge {
   display: inline-block;
-  background: rgba(255,255,255,.2);
+  background: rgba(255,255,255,.25);
   backdrop-filter: blur(4px);
   padding: 6px 16px;
   border-radius: 20px;
   font-size: .85rem;
   font-weight: 500;
+  position: relative;
 }
 
 /* Main Content */
 .main-content { flex: 1; max-width: var(--max-width); margin: 0 auto; padding: 40px 24px 60px; width: 100%; }
 
 /* Search */
-.search-wrap { margin-bottom: 40px; }
+.search-wrap { margin-bottom: 40px; position: relative; }
 .search-input {
   width: 100%;
   padding: 14px 20px 14px 48px;
   border: 2px solid var(--border);
-  border-radius: var(--radius);
+  border-radius: 50px;
   font-size: 1rem;
   background: var(--surface);
   transition: border-color .2s, box-shadow .2s;
   outline: none;
 }
-.search-input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(99,102,241,.15); }
-.search-wrap { position: relative; }
-.search-icon { position: absolute; left: 16px; top: 50%; transform: translateY(-50%); color: var(--text-secondary); }
+.search-input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(249,115,22,.15); }
+.search-icon { position: absolute; left: 18px; top: 50%; transform: translateY(-50%); color: var(--text-secondary); font-size: 1.1rem; }
 
 /* Section */
 .section { margin-bottom: 40px; }
-.section-title { font-size: 1.3rem; font-weight: 700; margin-bottom: 20px; display: flex; align-items: center; gap: 8px; }
+.section-title { font-size: 1.3rem; font-weight: 700; margin-bottom: 20px; display: flex; align-items: center; gap: 8px; color: var(--text); }
 .section-title .icon { font-size: 1.5rem; }
 
 /* Tool Grid */
@@ -123,19 +136,14 @@ a:hover { color: var(--primary-hover); }
 }
 .tool-card-icon {
   width: 44px; height: 44px;
-  border-radius: 10px;
+  border-radius: 12px;
   display: flex; align-items: center; justify-content: center;
   font-size: 1.4rem;
   margin-bottom: 14px;
 }
 .tool-card h3 { font-size: 1.05rem; font-weight: 600; margin-bottom: 6px; color: var(--text); }
 .tool-card p { font-size: .85rem; color: var(--text-secondary); line-height: 1.5; }
-.icon-purple { background: #eef2ff; color: #6366f1; }
-.icon-blue { background: #dbeafe; color: #3b82f6; }
-.icon-green { background: #d1fae5; color: #10b981; }
 .icon-orange { background: #fff7ed; color: #f97316; }
-.icon-cyan { background: #ecfeff; color: #06b6d4; }
-.icon-pink { background: #fce7f3; color: #ec4899; }
 
 /* Tool Page */
 .tool-page { max-width: 960px; margin: 0 auto; padding: 40px 24px 60px; width: 100%; flex: 1; }
@@ -169,7 +177,7 @@ textarea { min-height: 200px; }
 .btn {
   display: inline-flex; align-items: center; gap: 6px;
   padding: 10px 20px;
-  border: none; border-radius: var(--radius-sm);
+  border: none; border-radius: 50px;
   font-size: .9rem; font-weight: 600;
   cursor: pointer;
   transition: all .2s;
@@ -212,8 +220,8 @@ textarea { min-height: 200px; }
 /* Toast */
 .toast {
   position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
-  background: #1e293b; color: white; padding: 10px 24px;
-  border-radius: 8px; font-size: .9rem; z-index: 999;
+  background: #431407; color: #ffedd5; padding: 10px 24px;
+  border-radius: 50px; font-size: .9rem; z-index: 999;
   animation: toast-in .3s ease;
 }
 @keyframes toast-in { from { opacity: 0; transform: translateX(-50%) translateY(8px); } to { opacity: 1; transform: translateX(-50%) translateY(0); } }
@@ -233,7 +241,7 @@ textarea { min-height: 200px; }
 
 /* Footer */
 .site-footer {
-  background: var(--surface);
+  background: rgba(255,255,255,.8);
   border-top: 1px solid var(--border);
   padding: 32px 24px;
   text-align: center;
