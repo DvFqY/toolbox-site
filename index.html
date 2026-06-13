@@ -3,125 +3,79 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>在线工具箱 - 免费实用在线工具集合</title>
-<meta name="description" content="免费在线工具箱：JSON格式化、Base64编解码、二维码生成、密码生成、时间戳转换等12+实用工具，无需下载安装，即开即用。">
+<title>橘子站 - 有趣实用的小工具集合</title>
+<meta name="description" content="橘子站：休闲游戏、趣味工具、实用转换器，全部免费即开即用。">
 <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 <header class="site-header">
   <div class="header-inner">
     <a href="/" class="logo">
-      <svg viewBox="0 0 28 28" fill="none"><rect width="28" height="28" rx="7" fill="#6366f1"/><path d="M7 14h3l2-5 4 10 2-5h3" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      在线工具箱
+      <svg viewBox="0 0 32 32" fill="none"><circle cx="16" cy="16" r="14" fill="#f97316"/><circle cx="16" cy="16" r="10" fill="#fb923c"/><circle cx="16" cy="14" r="3" fill="#fbbf24"/><path d="M12 20c0 0 1.5 2 4 2s4-2 4-2" stroke="#fef3c7" stroke-width="1.2" fill="none"/></svg>
+      橘子站
     </a>
     <nav class="header-nav">
       <a href="/">首页</a>
-      <a href="#dev">开发工具</a>
-      <a href="#text">文本工具</a>
-      <a href="#convert">转换工具</a>
       <a href="#fun">趣味工具</a>
+      <a href="#convert">转换工具</a>
       <a href="#games">休闲游戏</a>
     </nav>
   </div>
 </header>
 
 <section class="hero">
-  <h1>🔧 免费在线工具箱</h1>
-  <p>12+ 实用工具，无需下载安装，打开浏览器就能用。开发者必备、日常办公利器。</p>
-  <span class="hero-badge">🆓 全部免费 · 无需注册 · 数据不上传</span>
+  <h1>🍊 橘子站</h1>
+  <p>好玩的小工具和小游戏，像橘子一样清新可口 🍊</p>
+  <span class="hero-badge">🍊 全部免费 · 无需注册 · 即开即用</span>
 </section>
 
 <main class="main-content">
   <div class="search-wrap">
     <span class="search-icon">🔍</span>
-    <input type="text" class="search-input" id="searchBox" placeholder="搜索工具... 比如 JSON、二维码、密码">
+    <input type="text" class="search-input" id="searchBox" placeholder="搜索工具或游戏...">
   </div>
 
-  <!-- 开发工具 -->
-  <section class="section" id="dev">
-    <h2 class="section-title"><span class="icon">💻</span> 开发工具</h2>
+  <!-- 趣味工具 -->
+  <section class="section" id="fun">
+    <h2 class="section-title"><span class="icon">🎮</span> 趣味工具</h2>
     <div class="tool-grid">
-      <a href="tools/json-formatter.html" class="tool-card">
-        <div class="tool-card-icon icon-purple">{ }</div>
-        <h3>JSON 格式化</h3>
-        <p>格式化、压缩、验证 JSON 数据，支持语法高亮和错误提示</p>
+      <a href="tools/lucky-wheel.html" class="tool-card">
+        <div class="tool-card-icon icon-orange">🎡</div>
+        <h3>幸运大转盘</h3>
+        <p>自定义奖品转盘，旋转抽奖，公平随机</p>
       </a>
-      <a href="tools/base64.html" class="tool-card">
-        <div class="tool-card-icon icon-blue">64</div>
-        <h3>Base64 编解码</h3>
-        <p>在线 Base64 编码与解码，支持文本和文件</p>
+      <a href="tools/dice-roller.html" class="tool-card">
+        <div class="tool-card-icon icon-orange">🎲</div>
+        <h3>骰子模拟器</h3>
+        <p>多骰同掷，点数统计，真实掷骰动画</p>
       </a>
-      <a href="tools/url-encoder.html" class="tool-card">
-        <div class="tool-card-icon icon-green">%</div>
-        <h3>URL 编解码</h3>
-        <p>URL Encode / Decode，处理特殊字符和中文参数</p>
+      <a href="tools/decision-maker.html" class="tool-card">
+        <div class="tool-card-icon icon-orange">🎯</div>
+        <h3>决策助手</h3>
+        <p>抛硬币、随机选择，专治选择困难症</p>
       </a>
-            <a href="tools/regex-tester.html" class="tool-card">
-        <div class="tool-card-icon icon-cyan">.*</div>
-        <h3>正则表达式测试</h3>
-        <p>在线测试正则表达式，实时高亮匹配结果和捕获组</p>
+      <a href="tools/pomodoro.html" class="tool-card">
+        <div class="tool-card-icon icon-orange">🍅</div>
+        <h3>番茄工作钟</h3>
+        <p>25分钟专注+5分钟休息，效率翻倍</p>
       </a>
-      <a href="tools/css-minifier.html" class="tool-card">
-        <div class="tool-card-icon icon-purple">{CSS}</div>
-        <h3>CSS 压缩</h3>
-        <p>压缩 CSS 代码，移除注释和空白，减小文件体积</p>
-      </a>
-    </div>
-  </section>
-
-  <!-- 文本工具 -->
-  <section class="section" id="text">
-    <h2 class="section-title"><span class="icon">📝</span> 文本工具</h2>
-    <div class="tool-grid">
-      <a href="tools/markdown-preview.html" class="tool-card">
-        <div class="tool-card-icon icon-cyan">MD</div>
-        <h3>Markdown 预览</h3>
-        <p>实时预览 Markdown，支持 GitHub 风格，写 README 必备</p>
-      </a>
-      <a href="tools/word-counter.html" class="tool-card">
-        <div class="tool-card-icon icon-orange">W</div>
-        <h3>字数统计</h3>
-        <p>统计字符数、单词数、行数、段落数，写作好帮手</p>
-      </a>
-            <a href="tools/case-converter.html" class="tool-card">
-        <div class="tool-card-icon icon-blue">Aa</div>
-        <h3>大小写转换</h3>
-        <p>英文大小写、驼峰、蛇形、帕斯卡等命名风格互转</p>
-      </a>
-      <a href="tools/text-dedup.html" class="tool-card">
-        <div class="tool-card-icon icon-green">⊜</div>
-        <h3>文本去重</h3>
-        <p>按行去重，显示重复项统计，支持排序和忽略大小写</p>
-      </a>
-      <a href="tools/diff-checker.html" class="tool-card">
-        <div class="tool-card-icon icon-pink">≠</div>
-        <h3>文本对比</h3>
-        <p>对比两段文本差异，高亮显示增删改内容</p>
-      </a>
-    </div>
-  </section>
-
-  <!-- 生成工具 -->
-  <section class="section" id="generate">
-    <h2 class="section-title"><span class="icon">🎲</span> 生成工具</h2>
-    <div class="tool-grid">
-      <a href="tools/qrcode.html" class="tool-card">
-        <div class="tool-card-icon icon-purple">QR</div>
-        <h3>二维码生成</h3>
-        <p>输入文本或链接，一键生成高清二维码图片，可下载</p>
+      <a href="tools/countdown.html" class="tool-card">
+        <div class="tool-card-icon icon-orange">⏰</div>
+        <h3>倒计时器</h3>
+        <p>精准倒计时，到点响铃提醒</p>
       </a>
       <a href="tools/password-generator.html" class="tool-card">
-        <div class="tool-card-icon icon-blue">🔑</div>
+        <div class="tool-card-icon icon-orange">🔐</div>
         <h3>密码生成器</h3>
         <p>生成高强度随机密码，自定义长度和字符类型</p>
       </a>
-            <a href="tools/random-number.html" class="tool-card">
-        <div class="tool-card-icon icon-pink">🎲</div>
-        <h3>随机数生成</h3>
-        <p>生成指定范围随机数，支持不重复、排序、小数位</p>
+      <a href="tools/qrcode.html" class="tool-card">
+        <div class="tool-card-icon icon-orange">📱</div>
+        <h3>二维码生成</h3>
+        <p>输入文本或链接，一键生成高清二维码图片</p>
       </a>
       <a href="tools/uuid-generator.html" class="tool-card">
-        <div class="tool-card-icon icon-green">ID</div>
+        <div class="tool-card-icon icon-orange">🆔</div>
         <h3>UUID 生成器</h3>
         <p>批量生成 UUID v4，支持一键复制</p>
       </a>
@@ -138,53 +92,24 @@
         <p>HEX / RGB / HSL 互相转换，实时预览颜色效果</p>
       </a>
       <a href="tools/timestamp.html" class="tool-card">
-        <div class="tool-card-icon icon-cyan">⏰</div>
+        <div class="tool-card-icon icon-orange">⏱</div>
         <h3>时间戳转换</h3>
         <p>Unix 时间戳与日期互转，支持秒/毫秒级精度</p>
       </a>
-    </div>
-  </section>
-</main>
-
-
-  
-  <!-- 趣味工具 -->
-  <section class="section" id="fun">
-    <h2 class="section-title"><span class="icon">🎪</span> 趣味工具</h2>
-    <div class="tool-grid">
-      <a href="tools/lucky-wheel.html" class="tool-card">
-        <div class="tool-card-icon icon-orange">🎡</div>
-        <h3>幸运大转盘</h3>
-        <p>自定义奖品转盘，旋转抽奖，公平随机</p>
-      </a>
-      <a href="tools/dice-roller.html" class="tool-card">
-        <div class="tool-card-icon icon-purple">🎲</div>
-        <h3>骰子模拟器</h3>
-        <p>多骰同掷，点数统计，真实掷骰动画</p>
-      </a>
-      <a href="tools/decision-maker.html" class="tool-card">
-        <div class="tool-card-icon icon-cyan">🤔</div>
-        <h3>决策助手</h3>
-        <p>抛硬币、随机选择，专治选择困难症</p>
-      </a>
-      <a href="tools/pomodoro.html" class="tool-card">
-        <div class="tool-card-icon icon-green">🍅</div>
-        <h3>番茄工作钟</h3>
-        <p>25分钟专注+5分钟休息，效率翻倍</p>
-      </a>
-      <a href="tools/countdown.html" class="tool-card">
-        <div class="tool-card-icon icon-pink">⏱</div>
-        <h3>倒计时器</h3>
-        <p>精准倒计时，到点响铃提醒</p>
+      <a href="tools/random-number.html" class="tool-card">
+        <div class="tool-card-icon icon-orange">🔢</div>
+        <h3>随机数生成</h3>
+        <p>自定义范围生成随机数，支持批量生成</p>
       </a>
     </div>
   </section>
+
   <!-- 休闲游戏 -->
   <section class="section" id="games">
     <h2 class="section-title"><span class="icon">🎮</span> 休闲游戏</h2>
     <div class="tool-grid">
       <a href="games/snake.html" class="tool-card">
-        <div class="tool-card-icon icon-green">🐍</div>
+        <div class="tool-card-icon icon-orange">🐍</div>
         <h3>贪吃蛇</h3>
         <p>经典街机游戏，方向键控制小蛇吃食物，越长越有挑战</p>
       </a>
@@ -193,13 +118,13 @@
         <h3>2048</h3>
         <p>滑动合并数字方块，看看你能拼出 2048 吗？</p>
       </a>
-            <a href="games/tetris.html" class="tool-card">
-        <div class="tool-card-icon icon-cyan">🧱</div>
+      <a href="games/tetris.html" class="tool-card">
+        <div class="tool-card-icon icon-orange">🧩</div>
         <h3>俄罗斯方块</h3>
         <p>经典消除游戏，方向键控制，挑战高分</p>
       </a>
       <a href="games/guess-number.html" class="tool-card">
-        <div class="tool-card-icon icon-purple">🎯</div>
+        <div class="tool-card-icon icon-orange">🎯</div>
         <h3>猜数字</h3>
         <p>逻辑推理游戏，根据A几B几反馈猜出4位数字</p>
       </a>
@@ -208,30 +133,30 @@
         <h3>记忆翻牌</h3>
         <p>翻开卡片配对，考验你的记忆力</p>
       </a>
-            <a href="games/tower-defense.html" class="tool-card">
-        <div class="tool-card-icon icon-pink">🏰</div>
+      <a href="games/tower-defense.html" class="tool-card">
+        <div class="tool-card-icon icon-orange">🏰</div>
         <h3>塔防战争</h3>
         <p>2.5D等距视角，4种塔5个关卡，击败敌人保卫阵地</p>
       </a>
       <a href="games/minesweeper.html" class="tool-card">
-        <div class="tool-card-icon icon-pink">💣</div>
+        <div class="tool-card-icon icon-orange">💣</div>
         <h3>扫雷</h3>
         <p>经典逻辑推理游戏，避开地雷揭开所有安全格子</p>
       </a>
     </div>
   </section>
+
 <!-- 广告位 -->
 <div style="max-width:1200px;margin:0 auto 40px;padding:0 24px;">
   <div class="ad-slot">📢 广告位 — 接入 Google AdSense 后自动展示</div>
 </div>
 
 <footer class="site-footer">
-  <p>© 2026 在线工具箱 · 所有工具均在浏览器本地运行，不会上传您的数据</p>
-  <p style="margin-top:6px;"><a href="/">首页</a> · <a href="#dev">开发工具</a> · <a href="#text">文本工具</a></p>
+  <p>© 2026 橘子站 · 所有工具均在浏览器本地运行，不会上传您的数据</p>
+  <p style="margin-top:6px;"><a href="/">首页</a> · <a href="#fun">趣味工具</a> · <a href="#convert">转换工具</a> · <a href="#games">休闲游戏</a></p>
 </footer>
 
 <script>
-// Search
 document.getElementById("searchBox").addEventListener("input", function(e) {
   var q = e.target.value.toLowerCase();
   document.querySelectorAll(".tool-card").forEach(function(card) {
@@ -247,14 +172,13 @@ document.getElementById("searchBox").addEventListener("input", function(e) {
 
 <!-- 访问统计 -->
 <div style="margin-top:16px;font-size:.85rem;color:var(--text-secondary)">
-  <span>👀 本站总访问 <span id="busuanzi_value_site_pv"></span> 次 · 
-  <span id="busuanzi_value_site_uv"></span> 人</span>
+  <span>👀 本站总访问 <span id="busuanzi_value_site_pv"></span> 次 · <span id="busuanzi_value_site_uv"></span> 人</span>
 </div>
 <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
-<script src="js/music-player.js?v=190307"></script>
-<script src="js/ambient-effects.js?v=190307"></script>
-<script src="js/theme-switcher.js?v=190307"></script>
-<script src="js/web-pet.js?v=190307"></script>
-<script src="js/easter-eggs.js?v=190307"></script>
+<script src="js/music-player.js?v=170158"></script>
+<script src="js/ambient-effects.js?v=170158"></script>
+<script src="js/theme-switcher.js?v=170158"></script>
+<script src="js/web-pet.js?v=170158"></script>
+<script src="js/easter-eggs.js?v=170158"></script>
 </body>
 </html>
